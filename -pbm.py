@@ -1,9 +1,20 @@
-import os, logging, shutil, sys
+import sys, os, shutil, logging
+
+from . import version
+
+def choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:
+    while True:
+        inp: str = input(f"\n\n\n{message}{"".join(" " * 80)}:").strip()
+
+        inp = inp if explicit_case else inp.lower()
+
+        if inp in choices:
+            return inp
+
+def confirmation() -> bool:
+    return choice_map("[y]es (confirm) | [n]o (cancel)", "y", "n") == "y"
 
 from random import randint
-
-from .utils import confirmation, choice_map
-from ..version import version
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,11 +50,12 @@ class PBM:
         try:
             path = path or sys.argv[2]
         except IndexError:
-            logger.fatal("missing pbm repo path, use `python -m -pbm init <path>` instead, or `python -m -pbm init .` to initialize the current directory.")
+            logger.fatal(
+                "missing pbm repo path, use `python -m pbm init <path>` instead, or `python -m pbm init .` to initialize the current directory.")
             return
 
         if os.path.exists(".pbm"):
-            logger.fatal("already a pbm repo in '.', cannot initialize again. use `python -m -pbm reinit` instead.")
+            logger.fatal("already a pbm repo in '.', cannot initialize again. use `python -m pbm reinit` instead.")
 
         else:
             os.mkdir(f"{path}/.pbm")
@@ -65,9 +77,10 @@ class PBM:
 
     @staticmethod
     def destroy() -> bool:
-        logger.warning("this will also detonate all builds of this pbm repo. consider using `python -m -pbm base export . *` to back up your builds.")
+        logger.warning(
+            "this will also detonate all builds of this pbm repo. consider using `python -m pbm base export . *` to back up your builds.")
         logger.warning("are you sure you want to continue?")
-        
+
         if os.path.exists(".pbm"):
             if confirmation():
                 shutil.rmtree(".pbm")
@@ -161,7 +174,8 @@ class PBM:
             export_id: int = randint(0, 99999)
 
             os.mkdir(f".pbm/global_export_{export_id}")
-            shutil.make_archive(f"{location.strip("/\\")}/export_g{export_id}", "zip", f".pbm/global_export_{export_id}")
+            shutil.make_archive(f"{location.strip("/\\")}/export_g{export_id}", "zip",
+                                f".pbm/global_export_{export_id}")
             shutil.copytree(f".pbm/builds", f"{location.strip("/\\")}/g{export_id}.pbm")
             shutil.rmtree(f".pbm/global_export_{export_id}")
 
@@ -172,8 +186,9 @@ class PBM:
             PBM.build.new_base(base)
 
             if os.path.exists(".pbm"):
-                logger.warning("this will also detonate all builds of this pbm repo (and replace them with the imported ones). consider creating a new pbm repo in a separate directory, and merging manually.")
-                
+                logger.warning(
+                    "this will also detonate all builds of this pbm repo (and replace them with the imported ones). consider creating a new pbm repo in a separate directory, and merging manually.")
+
                 if confirmation():
                     location = location or "."
 
@@ -181,30 +196,30 @@ class PBM:
 
                     if not os.path.exists(source_path):
                         logger.error(f"import failed: {source_path} does not exist.")
-                        
+
                         return
 
                     if export_id.startswith("g"):
                         target_path = ".pbm/builds"
-                        
+
                         if os.path.exists(target_path):
                             shutil.rmtree(target_path)
-                            
+
                         shutil.copytree(source_path, target_path)
                         logger.info(f"Successfully imported global export '{export_id}'")
-                        
+
                     else:
                         target_path = f".pbm/builds/{base}"
-                        
+
                         if os.path.exists(target_path):
                             shutil.rmtree(target_path)
-                            
+
                         shutil.copytree(source_path, target_path)
                         logger.info(f"successfully imported base '{base}' from export '{export_id}'")
-                        
+
                 else:
                     logger.warning("cancelled base import")
-            
+
             else:
                 logger.warning("not a pbm repo, no .pbm directory.")
 
@@ -212,7 +227,8 @@ class PBM:
         def delete_base(base: str | None = None) -> None:
             base = base or "main"
 
-            logger.warning(f"this will delete your '{base}' build. consider using `python -m -pbm export . {base}` to back up this build.")
+            logger.warning(
+                f"this will delete your '{base}' build. consider using `python -m pbm export . {base}` to back up this build.")
             logger.warning("are you sure you want to continue?")
 
             if confirmation():
@@ -266,3 +282,53 @@ class PBM:
 
         else:
             logger.info(f"{os.getcwd()} is not a pbm repo.")
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        logger.fatal("missing command, use `python -m -pbm <command> [args]`")
+
+        return
+
+    for arg in sys.argv[1].split(","):
+        match arg:
+            case "init":
+                PBM.init(sys.argv[2] if len(sys.argv) > 2 else ".")
+
+            case "reinit":
+                PBM.reinit()
+
+            case "destroy":
+                PBM.destroy()
+
+            case "build":
+                PBM.build.build(sys.argv[2] if len(sys.argv) > 2 else "main", sys.argv[3] if len(sys.argv) > 3 else "main.py")
+
+            case "create-base":
+                PBM.build.new_base(sys.argv[2] if len(sys.argv) > 2 else "main")
+
+            case "delete-base":
+                PBM.build.delete_base(sys.argv[2] if len(sys.argv) > 2 else "main")
+
+            case "export":
+                PBM.build.export_base(sys.argv[2] if len(sys.argv) > 2 else ".", sys.argv[3] if len(sys.argv) > 3 else "*")
+
+            case "import":
+                PBM.build.import_base(sys.argv[2] if len(sys.argv) > 2 else "0000", sys.argv[3] if len(sys.argv) > 3 else "main", sys.argv[4] if len(sys.argv) > 4 else ".")
+
+            case "detonate":
+                PBM.build.detonate(sys.argv[2] if len(sys.argv) > 2 else "main")
+
+            case "run":
+                PBM.run(sys.argv[2] if len(sys.argv) > 2 else "main")
+
+            case "status":
+                PBM.status()
+
+            case "write":
+                os.system(f"nvim {sys.argv[2] if len(sys.argv) > 2 else "main.py"}")
+
+            case _:
+                logger.fatal(f"unknown command: {arg}")
+
+if __name__ == "__main__":
+    main()
