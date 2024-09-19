@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/MANIFEST.in" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pypi_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypi_setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,11 +31,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/pixil/OneDrive/Documents/pbm"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\pixil\OneDrive\Documents\Projects\pbm" />

@@ -41,7 +41,7 @@ setup(name="pypbm repo",
 """
 
 class PBM:
-    latest_version = "v1.3"
+    latest_version = "v1.5"
 
     @staticmethod
     def init(path: str | None = None) -> None:

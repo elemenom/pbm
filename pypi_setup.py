@@ -7,7 +7,7 @@ with open("README.md", encoding="utf-8") as fh:
 print(f"{PBM.latest_version=}")
 
 setup(
-    name="pbm-root",
+    name="pbm_r",
     version=PBM.latest_version,
     author="elemenom",
     author_email="pixilreal@gmail.com",
