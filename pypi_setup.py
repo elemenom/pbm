@@ -1,14 +1,11 @@
 from setuptools import setup, find_packages
-from pbm import PBM
 
-with open("README.md", encoding="utf-8") as fh:
-    long_description: str = fh.read()
-
-print(f"{PBM.latest_version=}")
+with open("README.md", encoding="utf-8") as file:
+    long_description: str = file.read()
 
 setup(
-    name="pbm_r",
-    version=PBM.latest_version,
+    name="pbm-root",
+    version="1.2",
     author="elemenom",
     author_email="pixilreal@gmail.com",
     description="Version control at its fullest.",

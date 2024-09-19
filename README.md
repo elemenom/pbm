@@ -8,10 +8,10 @@ running them.
 
 ### 1. Using `pip` (RECOMMENDED`):
 ```commandline
-pip install pbm_r
+pip install pbm-root
 ```
 
-- [Click here](https://bit.ly/get-pbm) for more information on how to install PBM.
+- [Click here](https://pypi.org/project/pbm-root) for more information on how to install PBM.
 
 *No other installation methods at the moment*
 
