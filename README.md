@@ -4,6 +4,15 @@ PBM is a lightweight console-oriented CLI and package for building python projec
 as EXE files, creating memory-efficient back-ups, managing dependencies and
 running them.
 
+## Installation
+
+### 1. Using `pip` (RECOMMENDED`):
+```commandline
+pip install pbm
+```
+
+*No other installation methods at the moment*
+
 ## CLI Commands
 
 - `python -m -pbm init <path>` - Initialize a PBM repository. PBM repositories are
