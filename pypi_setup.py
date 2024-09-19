@@ -1,23 +1,18 @@
 from setuptools import setup, find_packages
+from pbm import PBM
 
-from . import version
+with open("README.md", encoding="utf-8") as fh:
+    long_description: str = fh.read()
 
-"""
-git add --all
-git commit
-git push
-python pypi_setup.py sdist bdist_wheel
-twine upload dist/*
-rm -rf dist build pbm.egg-info
-"""
+print(f"{PBM.latest_version=}")
 
 setup(
-    name="pbm",
-    version=str(version),
+    name="pbm-root",
+    version=PBM.latest_version,
     author="elemenom",
     author_email="pixilreal@gmail.com",
-    description="Version control at it's fullest.",
-    long_description=(README:=open("README.md")).read(),
+    description="Version control at its fullest.",
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/elemenom/pbm",
     packages=find_packages(),
@@ -29,7 +24,4 @@ setup(
     python_requires='>=3.12',
     license="GPLv3",
     include_package_data=True,
-    install_requires=[]
 )
-
-README.close()

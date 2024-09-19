@@ -8,7 +8,7 @@ running them.
 
 ### 1. Using `pip` (RECOMMENDED`):
 ```commandline
-pip install pbm
+pip install pbm-root
 ```
 
 *No other installation methods at the moment*
