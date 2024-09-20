@@ -6,7 +6,7 @@ running them.
 
 ## Installation
 
-### 1. Using `pip` (RECOMMENDED`):
+### 1. Using `pip` (RECOMMENDED):
 ```commandline
 pip install pbm-root
 ```
