@@ -1,11 +1,22 @@
 from setuptools import setup, find_packages
 
+from pbm import PBM
+
 with open("README.md", encoding="utf-8") as file:
     long_description: str = file.read()
 
+"""
+python pypi_setup.py sdist bdist_wheel
+python -m twine upload dist/*
+git add --all
+git commit
+git push
+
+"""
+
 setup(
     name="pbm-root",
-    version="1.2",
+    version=PBM.latest_version,
     author="elemenom",
     author_email="pixilreal@gmail.com",
     description="Version control at its fullest.",
@@ -21,4 +32,10 @@ setup(
     python_requires='>=3.12',
     license="GPLv3",
     include_package_data=True,
+    install_requires=[],
+    entry_points={
+            "console_scripts": [
+                "pbm=pbm.cli:main"
+            ],
+        }
 )
