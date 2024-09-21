@@ -8,6 +8,7 @@ with open("README.md", encoding="utf-8") as file:
 """
 python pypi_setup.py sdist bdist_wheel
 python -m twine upload dist/*
+rm -r dist,build,*.egg-info
 git add --all
 git commit
 git push

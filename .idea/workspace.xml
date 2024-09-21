@@ -5,14 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/pbm/__main__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pbm/_pbm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SECURITY.md" beforeDir="false" afterPath="$PROJECT_DIR$/SECURITY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__main__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_cli.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_get_pbm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_pbm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.2.8-py3-none-any.whl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.2.8.tar.gz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pbm/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/_cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/get_pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/_get_pbm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/path.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm/_pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/_pbm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/PKG-INFO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/SOURCES.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/dependency_links.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/entry_points.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/requires.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/top_level.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pypi_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypi_setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,15 +50,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/pixil/OneDrive/Documents",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/pixil/OneDrive/Documents/pbm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\pixil\OneDrive\Documents\pbm\-pbm" />

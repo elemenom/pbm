@@ -1,11 +1,6 @@
 import sys, os, shutil, logging
-from importlib import import_module
 
 from random import randint
-from types import ModuleType
-from typing import Any
-
-from . import paint
 
 def mkdir(path: str) -> bool:
     if os.path.exists(path):
@@ -40,6 +35,25 @@ def confirmation() -> bool:
 
     return choice_map("[y]es (confirm) | [n]o (cancel)", "y", "n") == "y"
 
+def paint(cont: str) -> str:
+    return cont\
+        .replace("&g", "\033[32m")\
+        .replace("&r", "\033[31m")\
+        .replace("&y", "\033[33m")\
+        .replace("&b", "\033[34m")\
+        .replace("&m", "\033[35m")\
+        .replace("&c", "\033[36m")\
+        .replace("&w", "\033[37m")\
+        .replace("&0", "\033[0m")\
+        .replace("&bold", "\033[1m")\
+        .replace("&underline", "\033[4m")\
+        .replace("&italic", "\033[3m")\
+        .replace("&blink", "\033[5m")\
+        .replace("&reverse", "\033[7m")\
+        .replace("&hide", "\033[8m")\
+        .replace("&reset", "\033[0m")\
+        + "\033[0m"
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s: %(message)s"
@@ -68,7 +82,7 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.2.8"
+    latest_version: str = "v1.2.9"
 
     def init(self, path: str | None = None) -> None:
         """
@@ -79,11 +93,7 @@ class PBM:
         [location]/.pbm/
         [location]/.pbm/bases/
         [location]/.pbm/bases/main/
-        [location]/.pbm/dependencies/
         [location]/.pbm/cx_freeze_setup.py
-        [location]/.pbm/dependencies-list
-        [location]/__pbm_dependencies__/links.py
-        [location]/__pbm_dependencies__/
         [location]/.pbm/init-version
         [location]/.pbm/default-base
         (i) paths that end with '/' are directories, any other paths are files
@@ -100,8 +110,6 @@ class PBM:
             mkdir(f"{path}/.pbm")
             mkdir(f"{path}/.pbm/bases")
             mkdir(f"{path}/.pbm/bases/main")
-            mkdir(f"{path}/.pbm/dependencies")
-            mkdir(f"{path}/__pbm_dependencies__")
 
             logger.info(paint("&gpbm repo initialized successfully"))
 
@@ -110,7 +118,6 @@ class PBM:
 
             self.set_version(self.latest_version)
             self.set_default_base("main")
-            self.set_dependencies({})
 
             self.status()
 
@@ -140,35 +147,6 @@ class PBM:
     def set_default_base(cont: str) -> None:
         with open(".pbm/default-base", "w") as file:
             file.write(cont)
-
-    @staticmethod
-    def get_dependencies() -> dict[str, int]:
-        with open(".pbm/dependencies-list") as file:
-            return eval(file.read())
-
-    @staticmethod
-    def set_dependencies(new: dict[str, int]) -> None:
-        with open(".pbm/dependencies-list", "w") as file:
-            file.write(str(new))
-
-    @staticmethod
-    def get_link(link: int) -> Any:
-        links: ModuleType = import_module("__pbm_dependencies__.links")
-
-        return getattr(links, f"l{link}")
-
-    @staticmethod
-    def add_link(cont: Any) -> int:
-        number: int = randint(0, 999999999)
-
-        with open("__pbm_dependencies__/links.py", "w"):
-            ...
-
-        links: ModuleType = import_module("__pbm_dependencies__.links")
-
-        setattr(links, f"l{number}", cont)
-
-        return number
 
     def set_default_base_endpoint(self, name: str | None = None) -> None:
         """
@@ -219,7 +197,6 @@ class PBM:
 
         if confirmation():
             rmdir(".pbm")
-            rmdir("__pbm_dependencies__")
             logger.info(paint("&gpbm repo destroyed successfully"))
 
             return True
@@ -264,8 +241,6 @@ class PBM:
 
             Builds [file] from . to [base].
             [file] is 'main.py' by default.
-
-            Building also loads dependencies, but ONLY when ran from the CLI.
 
             Use `pbm run` to run your builds.
             """
@@ -476,13 +451,11 @@ class PBM:
 
         version: str = self.get_version()
         default_base: str = self.get_default_base()
-        dependencies: str = str(list(self.get_dependencies().keys()))
         builds: list[str] = os.listdir(".pbm/bases")
 
         logger.info(paint("&gpbm repository in './': diagnosis"))
         logger.info(paint(f"&gversion: {version} ({f"outdated by {self.latest_version}" if self.get_version() != self.latest_version else "up to date"})"))
         logger.info(paint(f"&gdefault base: {default_base}"))
-        logger.info(paint(f"&gdependencies: {dependencies if dependencies else "no dependencies"}"))
         logger.info(paint(f"&gavailable bases: [{", ".join(builds) if builds else "no bases available"}]"))
 
     @staticmethod
@@ -501,36 +474,3 @@ class PBM:
         :q! - quit neovim WITHOUT saving
         """
         ...
-
-    class Dependencies:
-        def __init__(self, pbm_instance: "PBM") -> None:
-            self.pbm: PBM = pbm_instance
-
-        def clone_github_dependency(self, author: str | None = None, dependency: str | None = None, link: str | None = None) -> None:
-            self.pbm.ensure_pbm_dir()
-
-            link: str = link or f"https://github.com/{author}/{dependency}"
-
-            author = author or link.split("/")[-2]
-            dependency = dependency or link.split("/")[-1]
-
-            logger.info(paint(f"&gcloning github dependency '{dependency} by {author}' from '{link}'..."))
-
-            mkdir(f".pbm/dependencies/{dependency}")
-
-            os.system(f"git clone {link} .pbm/dependencies/{dependency}")
-
-        def install_pip_dependency(self, name: str, version: str | None = None) -> None:
-            self.pbm.ensure_pbm_dir()
-
-            logger.info(paint(f"&ginstalling pip dependency '{name}' '{"v"+version if version else "automatic version (newest)"}'..."))
-
-            os.system(f"pip install {name+"=="+version if version else name} -y")
-
-        def load_dependencies(self) -> None:
-            self.pbm.ensure_pbm_dir()
-
-            for name, link in list(self.pbm.get_dependencies().items()):
-                logger.info(f"loading dependency '{name}'...")
-
-                self.pbm.get_link(link)()
