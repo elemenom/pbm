@@ -6,21 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_cli.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_get_pbm.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/lib/pbm/_pbm.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.2.8-py3-none-any.whl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.2.8.tar.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pbm/_pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/_pbm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/PKG-INFO" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/SOURCES.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/dependency_links.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/entry_points.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/requires.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/top_level.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pypi_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/pypi_setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
