@@ -3,7 +3,7 @@
 ## Supported Versions
 
 **At this time, all versions of `pbm-root` (not `pbm_r`)
-are supported.
+are supported.**
 
 ## Reporting a Vulnerability
 

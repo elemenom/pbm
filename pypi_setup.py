@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from pbm import PBM
+from pbm._pbm import PBM
 
 with open("README.md", encoding="utf-8") as file:
     long_description: str = file.read()
@@ -11,7 +11,6 @@ python -m twine upload dist/*
 git add --all
 git commit
 git push
-
 """
 
 setup(
@@ -32,10 +31,10 @@ setup(
     python_requires='>=3.12',
     license="GPLv3",
     include_package_data=True,
-    install_requires=[],
+    install_requires=["cx-freeze"],
     entry_points={
-            "console_scripts": [
-                "pbm=pbm.cli:main"
-            ],
-        }
+        "console_scripts": [
+            "pbm=pbm.cli:main"
+        ]
+    }
 )

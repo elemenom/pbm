@@ -17,17 +17,17 @@ pip install pbm-root
 
 ## CLI Commands
 
-- `python -m -pbm init <path>` - Initialize a PBM repository. PBM repositories are
+- `pbm init <path>` - Initialize a PBM repository. PBM repositories are
 required to be initialized to perform most PBM actions.
-- `python -m -pbm destroy` - Destroy the PBM repository in the current path.
-- `python -m -pbm reinit` - Re-initialize the PBM repository in the current path.
+- `pbm destroy` - Destroy the PBM repository in the current path.
+- `pbm reinit` - Re-initialize the PBM repository in the current path.
 This can be useful when upgrading your PBM, and completely wipes the current
 PBM repository.
-- `python -m -pbm create-base <name>` - Create a base in the current PBM repository.
-- `python -m -pbm delete-base <name>` - Delete the base in the current PBM repository.
-- `python -m -pbm build <base>` - Build `./main.py` in the current PBM repository.
-- `python -m -pbm run <base>` - Run the newest build in the current PBM repository.
-- `python -m -pbm status` - View info about the current PBM repository.
-- `python -m -pbm detonate <base>` - Delete all build files in the base.
-- `python -m -pbm export <location> <base|*>` - Export the base as a .zip file and .pbm file.
-- `python -m -pbm import <export-id> <base>` - Load from an export's .pbm file using the export ID.
+- `pbm create-base <name>` - Create a base in the current PBM repository.
+- `pbm delete-base <name>` - Delete the base in the current PBM repository.
+- `pbm build <base>` - Build `./main.py` in the current PBM repository.
+- `pbm run <base>` - Run the newest build in the current PBM repository.
+- `pbm status` - View info about the current PBM repository.
+- `pbm detonate <base>` - Delete all build files in the base.
+- `pbm export <location> <base|*>` - Export the base as a .zip file and .pbm file.
+- `pbm import <export-id> <base>` - Load from an export's .pbm file using the export ID.

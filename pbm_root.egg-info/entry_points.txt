@@ -1,0 +1,2 @@
+[console_scripts]
+pbm = pbm.cli:main
