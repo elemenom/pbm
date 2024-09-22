@@ -1,8 +1,8 @@
 import sys, os
+from typing import Callable
 
-from ._get_pbm import get_pbm, get_base, get_dependencies
-from ._pbm import logger
-from . import paint
+from ._get_pbm import get_pbm, get_base
+from ._pbm import logger, paint
 
 def main() -> None:
     if len(sys.argv) < 2:
@@ -26,8 +26,6 @@ def main() -> None:
                 get_pbm().destroy()
 
             case "build":
-                get_dependencies().load_dependencies()
-
                 get_base().build(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base(), sys.argv[3] if len(sys.argv) > 3 else "main.py")
 
             case "create-base":
@@ -63,29 +61,6 @@ def main() -> None:
             case "set-default-base":
                 get_pbm().set_default_base_endpoint(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-            case "add-dependency":
-                if len(sys.argv) < 3:
-                    logger.error(paint("&rnot enough arguments. usage: 'pbm add-dependency <git|pip> <link-or-name>'"))
-
-                match sys.argv[2]:
-                    case "git":
-                        if sys.argv[3].startswith("https://"):
-                            get_pbm().set_dependencies(get_pbm().get_dependencies() | {sys.argv[3].split("/")[-1]: lambda:\
-                            get_dependencies().clone_github_dependency(link=sys.argv[3])})
-
-                        else:
-                            get_pbm().set_dependencies(get_pbm().get_dependencies() | {sys.argv[3].split("/")[0]:\
-                            get_pbm().add_link(lambda:\
-                            get_dependencies().clone_github_dependency(sys.argv[3].split("/")[0], sys.argv[3].split("/")[1]))})
-
-                    case "pip":
-                        get_pbm().set_dependencies(get_pbm().get_dependencies() | {sys.argv[3].split(":")[0]:\
-                        get_pbm().add_link(lambda:\
-                        get_dependencies().install_pip_dependency(sys.argv[3].split(":")[0], sys.argv[3].split(":")[1]))})
-
-                    case _:
-                        logger.error(paint(f"&runknown dependency type: {sys.argv[2]}"))
-
             case "help":
                 subject: str = sys.argv[3] if len(sys.argv) > 3 else ""
 
@@ -93,9 +68,15 @@ def main() -> None:
                     logger.info(paint("&yplease enter a subject you need help with."))
 
                 try:
-                    print(f"get_{sys.argv[2] if len(sys.argv) > 2 else "pbm"}", sys.argv[3] if len(sys.argv) > 3 else "")
+                    sector: Callable | None = {
+                        "pbm": get_pbm,
+                        "base": get_base
+                    }.get(sys.argv[2] if len(sys.argv) > 2 else "pbm")
 
-                    print((getattr(eval(f"get_{sys.argv[2] if len(sys.argv) > 2 else "pbm"}")(), subject).__doc__ or f"no provided help for 'pbm/{subject}'. sorry!").lower())
+                    if sector is None:
+                        logger.error(paint(f"&r'{sys.argv[2]}' is an invalid sector"))
+
+                    print((getattr(sector(), subject).__doc__ or f"no provided help for 'pbm/{subject}'. sorry!").lower())
 
                 except AttributeError:
                     logger.error(paint(f"&r'{subject}' is an invalid subject"))

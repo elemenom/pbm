@@ -10,11 +10,6 @@ def get_base() -> PBM.Base:
 
     return pbm.Base(pbm)
 
-def get_dependencies() -> PBM.Dependencies:
-    pbm: PBM = get_pbm()
-
-    return pbm.Dependencies(pbm)
-
 def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:
     obj = eval(obj, {
         "get_pbm": get_pbm,
