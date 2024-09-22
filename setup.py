@@ -35,7 +35,7 @@ setup(
     install_requires=["cx-freeze"],
     entry_points={
         "console_scripts": [
-            "pbm=pbm._cli:main"
+            "pbm=pbm.cli:main"
         ]
     }
 )

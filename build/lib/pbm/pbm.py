@@ -107,7 +107,7 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.5.1"
+    latest_version: str = "v1.5.2"
 
     def init(self, path: str | None = None) -> None:
         """
