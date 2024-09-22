@@ -29,7 +29,7 @@ def choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:
 
 def confirmation() -> bool:
     if "-y" in sys.argv or "--yes" in sys.argv:
-        print("      :autofilled 'y'")
+        print("[y]es (confirm) | [n]o (cancel)\n      :autofill 'y'")
 
         return True
 
@@ -55,13 +55,38 @@ def paint(cont: str) -> str:
         + "\033[0m"
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(levelname)s: %(message)s"
 )
 
-logger = logging.getLogger(__name__)
+class ColoredFormatter(logging.Formatter):
+    COLORS: dict[str, str] = {
+        "DEBUG": "&c",
+        "INFO": "&g",
+        "WARNING": "&y",
+        "ERROR": "&r",
+        "CRITICAL": "&m"
+    }
 
-CX_FREEZE_SETUP = """
+    def format(self, record) -> str:
+        levelname = record.levelname
+        if levelname in self.COLORS:
+            levelname = record.levelname.lower()  # Use lowercase
+            colored_msg = f"{self.COLORS[record.levelname]}{record.msg}&0"  # Add color
+            record.msg = colored_msg
+            record.levelname = levelname
+        
+        return paint(super().format(record))
+
+logger: logging.Logger = logging.getLogger(__name__)
+handler: logging.StreamHandler = logging.StreamHandler()
+handler.setFormatter(ColoredFormatter("%(levelname)s: %(message)s"))
+logger.handlers = []
+logger.addHandler(handler)
+
+logger.propagate = False
+
+CX_FREEZE_SETUP: str = """
 from cx_Freeze import setup, Executable
 
 build_options = {{
@@ -82,7 +107,7 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.3.2.2"
+    latest_version: str = "v1.5.1"
 
     def init(self, path: str | None = None) -> None:
         """
@@ -102,7 +127,7 @@ class PBM:
         try:
             path = path or sys.argv[2]
         except IndexError:
-            logger.error(paint("&rmissing pbm repo path, use `pbm init <path>` instead, or `pbm init .` to initialize the current directory."))
+            logger.error(paint("missing pbm repo path, use `pbm init <path>` instead, or `pbm init .` to initialize the current directory."))
 
             return
 
@@ -111,7 +136,7 @@ class PBM:
             mkdir(f"{path}/.pbm/bases")
             mkdir(f"{path}/.pbm/bases/main")
 
-            logger.info(paint("&gpbm repo initialized successfully"))
+            logger.info(paint("pbm repo initialized successfully"))
 
             with open(".pbm/cx_freeze_setup.py", "w") as file:
                 file.write(CX_FREEZE_SETUP.format("main.py"))
@@ -122,7 +147,7 @@ class PBM:
             self.status()
 
         else:
-            logger.error(paint("&ralready a pbm repo in '.', cannot initialize again. use `pbm reinit` instead."))
+            logger.error(paint("already a pbm repo in '.', cannot initialize again. use `pbm reinit` instead."))
 
     @staticmethod
     def get_version() -> str:
@@ -148,6 +173,16 @@ class PBM:
         with open(".pbm/default-base", "w") as file:
             file.write(cont)
 
+    @staticmethod
+    def get_secrets() -> dict[int, str]:
+        with open(".pbm/secrets") as file:
+            return eval(file.read())
+
+    @staticmethod
+    def set_secrets(cont: dict[int, str]) -> None:
+        with open(".pbm/secrets", "w") as file:
+            file.write(str(cont))
+
     def set_default_base_endpoint(self, name: str | None = None) -> None:
         """
         Command: `pbm set-default-base <base>`
@@ -158,9 +193,9 @@ class PBM:
 
         name = name or "main"
 
-        logger.warning(paint("&ythis will rename the physical default base directory as well as defaults in commands"))
-        logger.warning(paint(f"&yfrom '{self.get_default_base()}' to '{name}'. this action cannot be undone."))
-        logger.warning(paint(f"&yyour bases will be saved and won't be lost during the refactoring."))
+        logger.warning(paint("this will rename the physical default base directory as well as defaults in commands"))
+        logger.warning(paint(f"from '{self.get_default_base()}' to '{name}'. this action cannot be undone."))
+        logger.warning(paint(f"your bases will be saved and won't be lost during the refactoring."))
 
         if confirmation():
             self.set_default_base(name)
@@ -168,7 +203,7 @@ class PBM:
     @staticmethod
     def ensure_pbm_dir() -> None:
         if not os.path.exists(".pbm"):
-            logger.fatal(paint("&rnot a pbm repo, no .pbm directory."))
+            logger.fatal(paint("not a pbm repo, no .pbm directory."))
             exit(1)
 
     def destroy(self) -> bool:
@@ -184,17 +219,17 @@ class PBM:
 
         self.ensure_pbm_dir()
 
-        logger.warning(paint("&rthis will also detonate all bases of the pbm repo IN THE ./ (CURRENT) DIRECTORY. consider using `pbm base export . *` to back up your bases."))
-        logger.warning(paint("&yare you sure you want to continue?"))
+        logger.warning(paint("this will also detonate all bases of the pbm repo IN THE ./ (CURRENT) DIRECTORY. consider using `pbm base export . *` to back up your bases."))
+        logger.warning(paint("are you sure you want to continue?"))
 
         if confirmation():
             rmdir(".pbm")
-            logger.info(paint("&gpbm repo destroyed successfully"))
+            logger.info(paint("pbm repo destroyed successfully"))
 
             return True
 
         else:
-            logger.warning(paint("&ycancelled pbm repo destruction"))
+            logger.warning(paint("cancelled pbm repo destruction"))
 
         return False
 
@@ -218,10 +253,10 @@ class PBM:
             self.init(".")
             new_version = self.get_version()
 
-            logger.info(paint(f"&gpbm repo reinitialized successfully"))
-            logger.info(paint(f"&r{old_version}&0 -> &g{new_version}"))
+            logger.info(paint(f"pbm repo reinitialized successfully"))
+            logger.info(paint(f"{old_version} -> {new_version}"))
         else:
-            logger.warning(paint("&ycancelled pbm repo reinitialization"))
+            logger.warning(paint("cancelled pbm repo reinitialization"))
 
     class Base:
         def __init__(self, pbm_instance: "PBM") -> None:
@@ -237,7 +272,7 @@ class PBM:
             Use `pbm run` to run your builds.
             """
 
-            logger.warning(paint(f"&ythis will overwrite your '{base}' build"))
+            logger.warning(paint(f"this will overwrite your '{base}' build"))
 
             if confirmation():
                 self.pbm.ensure_pbm_dir()
@@ -249,25 +284,37 @@ class PBM:
 
                 os.system(f"python .pbm/cx_freeze_setup.py build_exe --build-exe .pbm/bases/{base}")
 
-                logger.info(paint("&gbuild completed successfully"))
+                logger.info(paint("build completed successfully"))
 
             else:
-                logger.warning(paint("&ycancelled standard build"))
+                logger.warning(paint("cancelled standard build"))
 
         def new_base(self, base: str) -> None:
             """
             Command: `pbm create-base <base>`
 
             Creates a new base in the PBM repository at .
+
+            WARNING: `create-base` is deprecated, but can still be used.
+                     Consider detonating a new branch using
+                     `pbm detonate [branch]` instead.
+
+                     This is because unlike `create-base`, `detonate`
+                     takes some extra security measures to ensure
+                     that the base is up and running properly when created.
+
+                     You may still use `create-base` if you want,
+                     but it's discouraged for large repositories where
+                     file safety is key.
             """
 
             self.pbm.ensure_pbm_dir()
 
             if os.path.exists(f".pbm/bases/{base}"):
-                logger.warning(paint(f"&ybase '{base}' already exists"))
+                logger.warning(paint(f"base '{base}' already exists"))
             else:
                 mkdir(f".pbm/bases/{base}")
-                logger.info(paint(f"&gbase '{base}' created successfully"))
+                logger.info(paint(f"base '{base}' created successfully"))
 
         def export_all(self, location: str) -> None:
             self.pbm.ensure_pbm_dir()
@@ -280,7 +327,7 @@ class PBM:
             shutil.copytree(f".pbm/bases", f"{location.strip('/\\')}/g{export_id}.pbm")
             rmdir(f".pbm/global_export_{export_id}")
 
-            logger.info(paint(f"&gsuccessfully created global export 'g{export_id}'"))
+            logger.info(paint(f"successfully created global export 'g{export_id}'"))
 
         def export_base(self, location: str, base: str) -> None:
             """
@@ -317,11 +364,11 @@ class PBM:
             shutil.make_archive(f"{location.strip('/\\')}/export_{export_id}", "zip", f".pbm/bases/{base}")
             shutil.copytree(f".pbm/bases/{base}", f"{location.strip('/\\')}/{export_id}.pbm")
 
-            logger.info(paint(f"&gsuccessfully created export '{export_id}'"))
+            logger.info(paint(f"successfully created export '{export_id}'"))
 
         def import_base(self, export_id: str, base: str, location: str | None = None) -> None:
             """
-            Command: `pbm import <id> [base|*] [location]
+            Command: `pbm import <id> [base|*] [location]`
 
             Import an exported id.pbm* directory.
             Importing a base overwrites that base with the imported material.
@@ -340,14 +387,14 @@ class PBM:
             self.new_base(base)
             self.pbm.ensure_pbm_dir()
 
-            logger.warning(paint("&ythis may also detonate all bases of this pbm repo (and replace them with the imported ones) if a global export is being imported. consider creating a new pbm repo in a separate directory, and merging manually."))
+            logger.warning(paint("this may also detonate all bases of this pbm repo (and replace them with the imported ones) if a global export is being imported. consider creating a new pbm repo in a separate directory, and merging manually."))
 
             if confirmation():
                 location = location or "."
                 source_path = f"{location}/{export_id}.pbm"
 
                 if not os.path.exists(source_path):
-                    logger.error(paint(f"&rimport failed: {source_path} does not exist."))
+                    logger.error(paint(f"import failed: {source_path} does not exist."))
                     return
 
                 if export_id.startswith("g"):
@@ -355,15 +402,15 @@ class PBM:
                     if os.path.exists(target_path):
                         rmdir(target_path)
                     shutil.copytree(source_path, target_path)
-                    logger.info(paint(f"&gsuccessfully imported global export '{export_id}'"))
+                    logger.info(paint(f"successfully imported global export '{export_id}'"))
                 else:
                     target_path = f".pbm/bases/{base}"
                     if os.path.exists(target_path):
                         rmdir(target_path)
                     shutil.copytree(source_path, target_path)
-                    logger.info(paint(f"&gsuccessfully imported base '{base}' from export '{export_id}'"))
+                    logger.info(paint(f"successfully imported base '{base}' from export '{export_id}'"))
             else:
-                logger.warning(paint("&ycancelled base import"))
+                logger.warning(paint("cancelled base import"))
 
         def delete_base(self, base: str | None = None) -> None:
             """
@@ -376,19 +423,19 @@ class PBM:
 
             base = base or self.pbm.get_default_base()
 
-            logger.warning(paint(f"&ythis will delete your '{base}' build. consider using `pbm export . {base}` to back up this build."))
-            logger.warning(paint("&yare you sure you want to continue?"))
+            logger.warning(paint(f"this will delete your '{base}' build. consider using `pbm export . {base}` to back up this build."))
+            logger.warning(paint("are you sure you want to continue?"))
 
             if confirmation():
                 try:
                     rmdir(f".pbm/bases/{base}")
                 except FileNotFoundError:
-                    logger.error(paint(f"&rthat base '{base}' does not exist."))
+                    logger.error(paint(f"that base '{base}' does not exist."))
                     return
 
-                logger.info(paint("&gbase deleted successfully"))
+                logger.info(paint("base deleted successfully"))
             else:
-                logger.warning(paint("&ycancelled base deletion"))
+                logger.warning(paint("cancelled base deletion"))
 
         def detonate(self, base: str | None = None) -> None:
             """
@@ -396,27 +443,30 @@ class PBM:
 
             Doesn't necessarily delete base [base], but detonates (deletes)
             the build within it. Useful for memory-efficiency and cleanup.
+
+            Detonating a non-existent base will in turn create it.
+            This is the recommended approach to creating bases.
             """
 
             self.pbm.ensure_pbm_dir()
 
             base = base or self.pbm.get_default_base()
 
-            logger.warning(paint(f"&ythis will detonate your '{base}' build"))
-            logger.warning(paint("&yare you sure you want to continue?"))
+            logger.warning(paint(f"this will detonate your '{base}' build"))
+            logger.warning(paint("are you sure you want to continue?"))
 
             if confirmation():
                 try:
                     rmdir(f".pbm/bases/{base}")
                 except FileNotFoundError:
-                    logger.error(paint(f"&rthat base '{base}' does not exist."))
+                    logger.error(paint(f"that base '{base}' does not exist."))
                     return
 
                 mkdir(f".pbm/bases/{base}")
-                logger.info(paint("&gbase detonated successfully"))
+                logger.info(paint("base detonated successfully"))
 
             else:
-                logger.warning(paint("&ycancelled base detonation"))
+                logger.warning(paint("cancelled base detonation"))
                 
         def run(self, base: str | None = None) -> None:
             """
@@ -432,11 +482,11 @@ class PBM:
             try:
                 exe_file: str = [f for f in os.listdir(f".pbm/bases/{base}") if f.endswith(".exe")][0]
 
-                logger.info(paint(f"&grunning '{base}' build\n\n"))
+                logger.info(paint(f"running '{base}' build\n\n"))
                 os.system(f".pbm\\bases\\{base}\\{exe_file}")
 
             except IndexError:
-                logger.error(paint(f"&rbase '{base}' is not built."))
+                logger.error(paint(f"base '{base}' is not built."))
 
     def status(self) -> None:
         self.ensure_pbm_dir()
@@ -445,10 +495,10 @@ class PBM:
         default_base: str = self.get_default_base()
         builds: list[str] = os.listdir(".pbm/bases")
 
-        logger.info(paint("&gpbm repository in './': diagnosis"))
-        logger.info(paint(f"&gversion: {version} ({f"outdated by {self.latest_version}" if self.get_version() != self.latest_version else "up to date"})"))
-        logger.info(paint(f"&gdefault base: {default_base}"))
-        logger.info(paint(f"&gavailable bases: [{", ".join(builds) if builds else "no bases available"}]"))
+        logger.info(paint("pbm repository in './': diagnosis"))
+        logger.info(paint(f"version: {version} ({f"outdated by {self.latest_version}" if self.get_version() != self.latest_version else "up to date"})"))
+        logger.info(paint(f"default base: {default_base}"))
+        logger.info(paint(f"available bases: [{", ".join(builds) if builds else "no bases available"}]"))
 
     @staticmethod
     def write() -> None: # EMPTY METHOD JUST FOR THE HELP FUNCTIONALITY
@@ -460,9 +510,9 @@ class PBM:
         NEOVIM BASICS:
         - Press 'i' to switch to insert mode
         - Press 'Esc' to switch to command mode
-        - Press ':' to enter command mode and type your command
+        - Press ':' to type a command whilst in command mode
 
-        :wq - save and quit
-        :q! - quit neovim WITHOUT saving
+        - :wq - save and quit
+        - :q! - quit neovim WITHOUT saving
         """
         ...
