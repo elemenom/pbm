@@ -82,7 +82,7 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.3.2"
+    latest_version: str = "v1.3.2.2"
 
     def init(self, path: str | None = None) -> None:
         """
@@ -163,15 +163,7 @@ class PBM:
         logger.warning(paint(f"&yyour bases will be saved and won't be lost during the refactoring."))
 
         if confirmation():
-            try:
-                shutil.copytree(f".pbm/bases/{self.get_default_base()}", f".pbm/bases/{name}")
-                rmdir(f".pbm/bases/{self.get_default_base()}")
-
-                self.set_default_base(name)
-            except FileNotFoundError:
-                logger.error(paint(f"&rcould not find the '{self.get_default_base()}' base. operation cancelled."))
-
-                return
+            self.set_default_base(name)
 
     @staticmethod
     def ensure_pbm_dir() -> None:
