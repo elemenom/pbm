@@ -1,37 +1,5 @@
 [
     {
-        "label": "setup",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "Executable",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "setup",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "Executable",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
         "label": "annotations",
         "importPath": "__future__",
         "description": "__future__",
@@ -100,7 +68,15 @@
         "documentation": {}
     },
     {
-        "label": "Any",
+        "label": "Callable",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Callable",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -124,11 +100,43 @@
         "documentation": {}
     },
     {
-        "label": "get_secret",
-        "importPath": "pbm",
-        "description": "pbm",
+        "label": "randint",
+        "importPath": "random",
+        "description": "random",
         "isExtraImport": true,
-        "detail": "pbm",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "setup",
+        "importPath": "cx_Freeze",
+        "description": "cx_Freeze",
+        "isExtraImport": true,
+        "detail": "cx_Freeze",
+        "documentation": {}
+    },
+    {
+        "label": "Executable",
+        "importPath": "cx_Freeze",
+        "description": "cx_Freeze",
+        "isExtraImport": true,
+        "detail": "cx_Freeze",
+        "documentation": {}
+    },
+    {
+        "label": "setup",
+        "importPath": "cx_Freeze",
+        "description": "cx_Freeze",
+        "isExtraImport": true,
+        "detail": "cx_Freeze",
+        "documentation": {}
+    },
+    {
+        "label": "Executable",
+        "importPath": "cx_Freeze",
+        "description": "cx_Freeze",
+        "isExtraImport": true,
+        "detail": "cx_Freeze",
         "documentation": {}
     },
     {
@@ -153,15 +161,6 @@
         "description": "pbm.pbm",
         "isExtraImport": true,
         "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "build_options",
-        "kind": 5,
-        "importPath": ".pbm.cx_freeze_setup",
-        "description": ".pbm.cx_freeze_setup",
-        "peekOfCode": "build_options = {\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}\nsetup(name=\"pbm repo\",\n      version = \"1\",\n      description = \"PBM build\",",
-        "detail": ".pbm.cx_freeze_setup",
         "documentation": {}
     },
     {
@@ -248,9 +247,135 @@
     {
         "label": "main",
         "kind": 2,
+        "importPath": "build.lib.pbm.cli",
+        "description": "build.lib.pbm.cli",
+        "peekOfCode": "def main() -> None:\n    if len(sys.argv) < 2:\n        logger.error(\"missing command, use `pbm <command> [args]`\")\n        return\n    if get_pbm().get_version() != get_pbm().latest_version:\n        logger.warning(f\"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n        logger.warning(\"&ruse `pbm reinit` to upgrade.\")\n    for arg in sys.argv[1].split(\",\"):\n        match arg:\n            case \"init\":",
+        "detail": "build.lib.pbm.cli",
+        "documentation": {}
+    },
+    {
+        "label": "get_pbm",
+        "kind": 2,
+        "importPath": "build.lib.pbm.get_pbm",
+        "description": "build.lib.pbm.get_pbm",
+        "peekOfCode": "def get_pbm() -> PBM:\n    return PBM()\ndef get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj",
+        "detail": "build.lib.pbm.get_pbm",
+        "documentation": {}
+    },
+    {
+        "label": "get_base",
+        "kind": 2,
+        "importPath": "build.lib.pbm.get_pbm",
+        "description": "build.lib.pbm.get_pbm",
+        "peekOfCode": "def get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
+        "detail": "build.lib.pbm.get_pbm",
+        "documentation": {}
+    },
+    {
+        "label": "run_pbm",
+        "kind": 2,
+        "importPath": "build.lib.pbm.get_pbm",
+        "description": "build.lib.pbm.get_pbm",
+        "peekOfCode": "def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
+        "detail": "build.lib.pbm.get_pbm",
+        "documentation": {}
+    },
+    {
+        "label": "ColoredFormatter",
+        "kind": 6,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "class ColoredFormatter(logging.Formatter):\n    COLORS: dict[str, str] = {\n        \"DEBUG\": \"&c\",\n        \"INFO\": \"&g\",\n        \"WARNING\": \"&y\",\n        \"ERROR\": \"&r\",\n        \"CRITICAL\": \"&m\"\n    }\n    def format(self, record) -> str:\n        levelname = record.levelname",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "PBM",
+        "kind": 6,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "class PBM:\n    latest_version: str = \"v1.5.2\"\n    def init(self, path: str | None = None) -> None:\n        \"\"\"\n        Command: `pbm init [location]`\n        Initializes a new PBM blank repository at the specified [location] (. by default).\n        Running this creates the following paths on your system:\n        [location]/.pbm/\n        [location]/.pbm/bases/\n        [location]/.pbm/bases/main/",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "mkdir",
+        "kind": 2,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "def mkdir(path: str) -> bool:\n    if os.path.exists(path):\n        return False\n    os.mkdir(path)\n    return True\ndef rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "rmdir",
+        "kind": 2,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "def rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True\ndef choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "choice_map",
+        "kind": 2,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "def choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:\n            return inp\ndef confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "confirmation",
+        "kind": 2,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "def confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True\n    return choice_map(\"[y]es (confirm) | [n]o (cancel)\", \"y\", \"n\") == \"y\"\ndef paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "paint",
+        "kind": 2,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "def paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\\n        .replace(\"&b\", \"\\033[34m\")\\\n        .replace(\"&m\", \"\\033[35m\")\\\n        .replace(\"&c\", \"\\033[36m\")\\\n        .replace(\"&w\", \"\\033[37m\")\\\n        .replace(\"&0\", \"\\033[0m\")\\",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "logger.handlers",
+        "kind": 5,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "logger.handlers = []\nlogger.addHandler(handler)\nlogger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "logger.propagate",
+        "kind": 5,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "logger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "build_options",
+        "kind": 5,
+        "importPath": "build.lib.pbm.pbm",
+        "description": "build.lib.pbm.pbm",
+        "peekOfCode": "build_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}\nsetup(name=\"pbm repo\",\n      version = \"1\",\n      description = \"PBM build\",",
+        "detail": "build.lib.pbm.pbm",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
         "importPath": "pbm.cli",
         "description": "pbm.cli",
-        "peekOfCode": "def main() -> None:\n    if len(sys.argv) < 2:\n        logger.error(\"&rmissing command, use `pbm <command> [args]`\")\n        return\n    if get_pbm().get_version() != get_pbm().latest_version:\n        logger.warning(f\"&rthis pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n        logger.warning(\"&ruse `pbm reinit` to upgrade.\")\n    for arg in sys.argv[1].split(\",\"):\n        match arg:\n            case \"init\":",
+        "peekOfCode": "def main() -> None:\n    if len(sys.argv) < 2:\n        logger.error(\"missing command, use `pbm <command> [args]`\")\n        return\n    if get_pbm().get_version() != get_pbm().latest_version:\n        logger.warning(f\"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n        logger.warning(\"&ruse `pbm reinit` to upgrade.\")\n    for arg in sys.argv[1].split(\",\"):\n        match arg:\n            case \"init\":",
         "detail": "pbm.cli",
         "documentation": {}
     },
@@ -259,7 +384,7 @@
         "kind": 2,
         "importPath": "pbm.get_pbm",
         "description": "pbm.get_pbm",
-        "peekOfCode": "def get_pbm() -> PBM:\n    return PBM()\ndef get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef get_secrets() -> PBM.Secrets:\n    pbm: PBM = get_pbm()\n    return pbm.Secrets(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {",
+        "peekOfCode": "def get_pbm() -> PBM:\n    return PBM()\ndef get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj",
         "detail": "pbm.get_pbm",
         "documentation": {}
     },
@@ -268,16 +393,7 @@
         "kind": 2,
         "importPath": "pbm.get_pbm",
         "description": "pbm.get_pbm",
-        "peekOfCode": "def get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef get_secrets() -> PBM.Secrets:\n    pbm: PBM = get_pbm()\n    return pbm.Secrets(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base,",
-        "detail": "pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "get_secrets",
-        "kind": 2,
-        "importPath": "pbm.get_pbm",
-        "description": "pbm.get_pbm",
-        "peekOfCode": "def get_secrets() -> PBM.Secrets:\n    pbm: PBM = get_pbm()\n    return pbm.Secrets(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base,\n        \"get_secrets\": get_secrets,\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
+        "peekOfCode": "def get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
         "detail": "pbm.get_pbm",
         "documentation": {}
     },
@@ -286,44 +402,8 @@
         "kind": 2,
         "importPath": "pbm.get_pbm",
         "description": "pbm.get_pbm",
-        "peekOfCode": "def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base,\n        \"get_secrets\": get_secrets,\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
+        "peekOfCode": "def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
         "detail": "pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "add_link",
-        "kind": 2,
-        "importPath": "pbm.linking",
-        "description": "pbm.linking",
-        "peekOfCode": "def add_link(cont: Any, base: int = 10) -> int:\n    from random import randint\n    if \"pbm.py\" not in os.listdir():\n        raise FileNotFoundError(\"links not enabled yet\")\n    number: int = randint(0, int(\"9\" * base))\n    from types import ModuleType\n    from importlib import import_module\n    module: ModuleType = import_module(\"__links__\")\n    setattr(module, f\"l__{number}\", cont)\n    return number",
-        "detail": "pbm.linking",
-        "documentation": {}
-    },
-    {
-        "label": "get_link",
-        "kind": 2,
-        "importPath": "pbm.linking",
-        "description": "pbm.linking",
-        "peekOfCode": "def get_link(link: int) -> Any:\n    from types import ModuleType\n    from importlib import import_module\n    if \"pbm.py\" not in os.listdir():\n        raise FileNotFoundError(\"links not enabled yet\")\n    module: ModuleType = import_module(\"__links__\")\n    return getattr(module, f\"l__{link}\")\ndef start() -> None:\n    with open(\"pbm.py\", \"w\") as file:\n        ...",
-        "detail": "pbm.linking",
-        "documentation": {}
-    },
-    {
-        "label": "start",
-        "kind": 2,
-        "importPath": "pbm.linking",
-        "description": "pbm.linking",
-        "peekOfCode": "def start() -> None:\n    with open(\"pbm.py\", \"w\") as file:\n        ...\ndef stop() -> None:\n    import os\n    os.remove(\"pbm.py\")",
-        "detail": "pbm.linking",
-        "documentation": {}
-    },
-    {
-        "label": "stop",
-        "kind": 2,
-        "importPath": "pbm.linking",
-        "description": "pbm.linking",
-        "peekOfCode": "def stop() -> None:\n    import os\n    os.remove(\"pbm.py\")",
-        "detail": "pbm.linking",
         "documentation": {}
     },
     {
@@ -340,7 +420,7 @@
         "kind": 6,
         "importPath": "pbm.pbm",
         "description": "pbm.pbm",
-        "peekOfCode": "class PBM:\n    latest_version: str = \"v1.4\"\n    def init(self, path: str | None = None) -> None:\n        \"\"\"\n        Command: `pbm init [location]`\n        Initializes a new PBM blank repository at the specified [location] (. by default).\n        Running this creates the following paths on your system:\n        [location]/.pbm/\n        [location]/.pbm/bases/\n        [location]/.pbm/bases/main/",
+        "peekOfCode": "class PBM:\n    latest_version: str = \"v1.5.2\"\n    def init(self, path: str | None = None) -> None:\n        \"\"\"\n        Command: `pbm init [location]`\n        Initializes a new PBM blank repository at the specified [location] (. by default).\n        Running this creates the following paths on your system:\n        [location]/.pbm/\n        [location]/.pbm/bases/\n        [location]/.pbm/bases/main/",
         "detail": "pbm.pbm",
         "documentation": {}
     },

@@ -17,7 +17,7 @@ def main() -> None:
     for arg in sys.argv[1].split(","):
         match arg:
             case "init":
-                get_pbm().init(sys.argv[2] if len(sys.argv) > 2 else ".")
+                get_pbm().init()
 
             case "reinit":
                 get_pbm().reinit()

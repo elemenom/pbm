@@ -4,7 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="" />
+    <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/PythonImportHelper-v2-Completion.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/PythonImportHelper-v2-Completion.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/__main__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/cli.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/get_pbm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/lib/pbm/pbm.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.5.2-py3-none-any.whl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/pbm_root-1.5.2.tar.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm/pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/pbm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/PKG-INFO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/SOURCES.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/dependency_links.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/entry_points.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/requires.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm_root.egg-info/top_level.txt" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

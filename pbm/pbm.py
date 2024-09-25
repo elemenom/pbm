@@ -107,18 +107,18 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.5.2"
+    latest_version: str = "v1.6"
 
     def init(self, path: str | None = None) -> None:
         """
-        Command: `pbm init [location]`
+        Command: `pbm init`
 
-        Initializes a new PBM blank repository at the specified [location] (. by default).
+        Initializes a new blank PBM repository at .
+
         Running this creates the following paths on your system:
         [location]/.pbm/
         [location]/.pbm/bases/
         [location]/.pbm/bases/main/
-        [location]/.pbm/cx_freeze_setup.py
         [location]/.pbm/init-version
         [location]/.pbm/default-base
         (i) paths that end with '/' are directories, any other paths are files
@@ -137,9 +137,6 @@ class PBM:
             mkdir(f"{path}/.pbm/bases/main")
 
             logger.info(paint("pbm repo initialized successfully"))
-
-            with open(".pbm/cx_freeze_setup.py", "w") as file:
-                file.write(CX_FREEZE_SETUP.format("main.py"))
 
             self.set_version(self.latest_version)
             self.set_default_base("main")
@@ -269,6 +266,12 @@ class PBM:
             Builds [file] from . to [base].
             [file] is 'main.py' by default.
 
+            UPDATED IN 1.6:
+                Building now creates a copy of all files in a hidden 'src'
+                directory to allow for 'fetch'. Use the '--no-src' option to
+                stop this from happening. This will also make this base
+                unfetchable.
+
             Use `pbm run` to run your builds.
             """
 
@@ -285,6 +288,8 @@ class PBM:
                 os.system(f"python .pbm/cx_freeze_setup.py build_exe --build-exe .pbm/bases/{base}")
 
                 logger.info(paint("build completed successfully"))
+
+                shutil.copytree("./", f".pbm/bases/{base}/src")
 
             else:
                 logger.warning(paint("cancelled standard build"))
@@ -487,6 +492,22 @@ class PBM:
 
             except IndexError:
                 logger.error(paint(f"base '{base}' is not built."))
+
+        def fetch(self, base: str | None = None) -> None:
+            """
+            Command: `pbm fetch [base]`
+
+            Discards changes made to all files and overwrites them with their
+            respective files in [base]/src. Fetching cannot be undone.
+            """
+
+            base = base or self.pbm.get_default_base()
+
+            if os.path.exists(f".pbm/bases/{base}/src"):
+                shutil.copytree(f".pbm/bases/{base}/src", "./")
+
+            else:
+                logger.error(f"{base} is either not built, or built without a 'src'.")
 
     def status(self) -> None:
         self.ensure_pbm_dir()
