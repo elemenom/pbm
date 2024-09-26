@@ -107,7 +107,7 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.6"
+    latest_version: str = "v1.7"
 
     def init(self, path: str | None = None) -> None:
         """
@@ -203,7 +203,7 @@ class PBM:
             logger.fatal(paint("not a pbm repo, no .pbm directory."))
             exit(1)
 
-    def destroy(self) -> bool:
+    def destroy(self, **_) -> bool:
         """
         Command: `pbm destroy`
 
@@ -259,7 +259,7 @@ class PBM:
         def __init__(self, pbm_instance: "PBM") -> None:
             self.pbm: PBM = pbm_instance
 
-        def build(self, base: str | None = None, fn: str | None = None) -> None:
+        def build(self, base: str | None = None, fn: str | None = None, build_src: bool = True, **_) -> None:
             """
             Command: `pbm build [base] [file]`
 
@@ -289,7 +289,10 @@ class PBM:
 
                 logger.info(paint("build completed successfully"))
 
-                shutil.copytree("./", f".pbm/bases/{base}/src")
+                if build_src:
+                    shutil.copytree("./", f".pbm/bases/{base}/src")
+
+                    rmdir(f".pbm/bases/{base}/src/.pbm")
 
             else:
                 logger.warning(paint("cancelled standard build"))
@@ -485,7 +488,13 @@ class PBM:
             base = base or self.pbm.get_default_base()
 
             try:
-                exe_file: str = [f for f in os.listdir(f".pbm/bases/{base}") if f.endswith(".exe")][0]
+                try:
+                    exe_file: str = [f for f in os.listdir(f".pbm/bases/{base}") if f.endswith(".exe")][0]
+
+                except FileNotFoundError:
+                    logger.error(f"base '{base}' does not exist.")
+
+                    return
 
                 logger.info(paint(f"running '{base}' build\n\n"))
                 os.system(f".pbm\\bases\\{base}\\{exe_file}")
@@ -509,7 +518,7 @@ class PBM:
             else:
                 logger.error(f"{base} is either not built, or built without a 'src'.")
 
-    def status(self) -> None:
+    def status(self, _: None = None) -> None:
         self.ensure_pbm_dir()
 
         version: str = self.get_version()
@@ -537,3 +546,45 @@ class PBM:
         - :q! - quit neovim WITHOUT saving
         """
         ...
+
+    def console(self, _ = None) -> None:
+        logger.info("entered pbm console. use 'exit' or press 'CTRL + C' to quit.")
+        logger.info("")
+        logger.info("pbm by @elemenom on github")
+        logger.info(f"    distribution {self.latest_version}")
+        logger.info(f"open in '{os.getcwd()}'")
+        print()
+
+        while True:
+            try:
+                action: str = input(paint("&italic&g{}:pbm ").format(os.getcwd())).strip()
+
+                if action == "":
+                    ...
+
+                elif action == "exit":
+                    raise KeyboardInterrupt("manual exit")
+
+                elif action == "clear":
+                    os.system("clear")
+
+                elif action.startswith("cd "):
+                    try:
+                        os.chdir(action[3:])
+                    except FileNotFoundError:
+                        logger.error(f"{action[3:]}: no such file or directory")
+
+                elif action.startswith(";"):
+                    os.system(action[1:])
+
+                else:
+                    os.system(f"python -m pbm {action}")
+
+            except KeyboardInterrupt:
+                print()
+                logger.info("exiting pbm console...")
+
+                return
+
+            except Exception as err:
+                logger.error(f"error: {str(err)}")
