@@ -107,34 +107,27 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.7.1"
+    latest_version: str = "v1.7.2"
 
-    def init(self, path: str | None = None) -> None:
+    def init(self) -> None:
         """
         Command: `pbm init`
 
         Initializes a new blank PBM repository at .
 
         Running this creates the following paths on your system:
-        [location]/.pbm/
-        [location]/.pbm/bases/
-        [location]/.pbm/bases/main/
-        [location]/.pbm/init-version
-        [location]/.pbm/default-base
+        ./.pbm/
+        ./.pbm/bases/
+        ./.pbm/bases/main/
+        ./.pbm/init-version
+        ./.pbm/default-base
         (i) paths that end with '/' are directories, any other paths are files
         """
 
-        try:
-            path = path or sys.argv[2]
-        except IndexError:
-            logger.error(paint("missing pbm repo path, use `pbm init <path>` instead, or `pbm init .` to initialize the current directory."))
-
-            return
-
-        if ".pbm" not in os.listdir(path):
-            mkdir(f"{path}/.pbm")
-            mkdir(f"{path}/.pbm/bases")
-            mkdir(f"{path}/.pbm/bases/main")
+        if ".pbm" not in os.listdir("."):
+            mkdir(f"./.pbm")
+            mkdir(f"./.pbm/bases")
+            mkdir(f"./.pbm/bases/main")
 
             logger.info(paint("pbm repo initialized successfully"))
 
@@ -247,7 +240,7 @@ class PBM:
         old_version = self.get_version()
 
         if self.destroy():
-            self.init(".")
+            self.init()
             new_version = self.get_version()
 
             logger.info(paint(f"pbm repo reinitialized successfully"))

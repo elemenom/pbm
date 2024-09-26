@@ -38,7 +38,7 @@ def open_pbm_project(path: str) -> None:
     else:
         logs.append("info: .pbm directory not found, initializing...")
 
-        get_pbm().init(path)
+        get_pbm().init()
 
     logs.append("info: created root tkinter window")
     logs.append("info: creating elements...")

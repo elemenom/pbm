@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/pbm/desktop.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/desktop.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pbm/pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/pbm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +21,7 @@
     </option>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
