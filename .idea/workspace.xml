@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee320923-29a1-4c10-bcd2-376a024e2f97" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pbm/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/cli.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pbm/desktop.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/desktop.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pbm/pbm.py" beforeDir="false" afterPath="$PROJECT_DIR$/pbm/pbm.py" afterDir="false" />
     </list>
@@ -21,7 +23,7 @@
     </option>
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,

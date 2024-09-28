@@ -52,12 +52,17 @@ def open_pbm_project(path: str) -> None:
     home.geometry("500x1000")
 
     tk.Label(home, text="-- build and run --", font="arial 15 bold").pack(pady=20)
-    tk.Button(home, text=f"run '{get_pbm().get_default_base()}' base", command=lambda: get_base().run(), foreground="#00cc00", background="#aaaaaa").pack(pady=10)
-    tk.Button(home, text=f"build '{get_pbm().get_default_base()}' base with entrypoint 'main.py'", command=lambda: get_base().build(_=continue_in_terminal_popup()),foreground="#00cc00", background="#aaaaaa").pack(pady=10)
+    tk.Button(home, text=f"run base '{get_pbm().get_default_base()}'", command=lambda: get_base().run(), foreground="#00cc00", background="#aaaaaa").pack(pady=10)
+    tk.Button(home, text=f"build base '{get_pbm().get_default_base()}'", command=lambda: get_base().build(_=continue_in_terminal_popup()),foreground="#00cc00", background="#aaaaaa").pack(pady=10)
+    tk.Button(home, text=f"run src of base '{get_pbm().get_default_base()}'", command=lambda: get_base().run_src(), foreground="#00aa00").pack(pady=10)
+    tk.Button(home, text=f"build src of base '{get_pbm().get_default_base()}'", command=lambda: get_base().build_src(), foreground="#00aa00").pack(pady=10)
     tk.Button(home, text="run a different base", command=lambda: get_base().run(*fetch_input("base name")), foreground="#00aa00").pack(pady=10)
-    tk.Button(home, text="build a different base or entrypoint", command=lambda: get_base().build(*fetch_input("base name", "file to build from", "answer. would you like to also build\n"
-        "a 'src' with this build? (recommended).\n"
-        "this cannot be done later")),
+    tk.Button(home, text="build a different base", command=lambda: get_base().build(*fetch_input("base name", "answer. would you like to also build\n"
+        "a src with this build? (recommended). [Y/n]")),
+    foreground="#00aa00").pack(pady=10)
+    tk.Button(home, text="run src of a different base", command=lambda: get_base().run_src(*fetch_input("base name")),
+    foreground="#00aa00").pack(pady=10)
+    tk.Button(home, text="build src of a different base", command=lambda: get_base().build(*fetch_input("base name")),
     foreground="#00aa00").pack(pady=10)
 
     tk.Label(home, text="-- manage bases --", font="arial 15 bold").pack(pady=20)
@@ -94,7 +99,7 @@ def launch_pbm_desktop() -> None:
         title="choose a directory for pbm"
     ))).pack(pady=10)
     tk.Label(root, text="-- or --", font="arial 13 bold").pack(pady=10)
-    tk.Button(root, text="continue in terminal", command=lambda: get_pbm().console(continue_in_terminal_popup())).pack(pady=10)
+    tk.Button(root, text=f"open at cwd ({os.getcwd()})", command=lambda: open_pbm_project(os.getcwd())).pack(pady=10)
 
     root.mainloop()
 

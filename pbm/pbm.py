@@ -1,6 +1,9 @@
-import sys, os, shutil, logging
+import sys, os, shutil, logging, stat, subprocess
+from datetime import datetime
 
 from random import randint
+from typing import Callable
+
 
 def mkdir(path: str) -> bool:
     if os.path.exists(path):
@@ -10,11 +13,16 @@ def mkdir(path: str) -> bool:
 
     return True
 
+def rm_readonly(func: Callable, path: str, _) -> None:
+    os.chmod(path, stat.S_IWRITE)
+
+    func(path)
+
 def rmdir(path: str) -> bool:
     if not os.path.exists(path):
         return False
 
-    shutil.rmtree(path)
+    shutil.rmtree(path, onerror=rm_readonly)
 
     return True
 
@@ -86,7 +94,9 @@ logger.addHandler(handler)
 
 logger.propagate = False
 
-CX_FREEZE_SETUP: str = """
+CX_FREEZE_SETUP: str = r"""
+import os, sys
+
 from cx_Freeze import setup, Executable
 
 build_options = {{
@@ -94,6 +104,10 @@ build_options = {{
     "excludes": [
         "PyQt6",
         "PyQt5"
+    ],
+    "bin_includes": [
+        r"C:\path\to\dll1.dll",
+        r"C:\path\to\dll2.dll"
     ]
 }}
 
@@ -101,13 +115,13 @@ setup(name="pbm repo",
       version = "1",
       description = "PBM build",
       options = {{"build_exe": build_options}},
-      executables = [Executable("./{}")]
+      executables = [Executable("./{}", base="Win32GUI")]
 )
 """
 
 
 class PBM:
-    latest_version: str = "v1.7.2"
+    latest_version: str = "v1.8"
 
     def init(self) -> None:
         """
@@ -129,7 +143,7 @@ class PBM:
             mkdir(f"./.pbm/bases")
             mkdir(f"./.pbm/bases/main")
 
-            logger.info(paint("pbm repo initialized successfully"))
+            logger.info("pbm repo initialized successfully")
 
             self.set_version(self.latest_version)
             self.set_default_base("main")
@@ -137,7 +151,7 @@ class PBM:
             self.status()
 
         else:
-            logger.error(paint("already a pbm repo in '.', cannot initialize again. use `pbm reinit` instead."))
+            logger.error("already a pbm repo in '.', cannot initialize again. use `pbm reinit` instead.")
 
     @staticmethod
     def get_version() -> str:
@@ -153,8 +167,9 @@ class PBM:
         with open(".pbm/init-version", "w") as file:
             file.write(cont)
 
-    @staticmethod
-    def get_default_base() -> str:
+    def get_default_base(self) -> str:
+        self.ensure_pbm_dir()
+
         with open(".pbm/default-base") as file:
             return file.read()
 
@@ -163,15 +178,13 @@ class PBM:
         with open(".pbm/default-base", "w") as file:
             file.write(cont)
 
-    @staticmethod
-    def get_secrets() -> dict[int, str]:
-        with open(".pbm/secrets") as file:
-            return eval(file.read())
+    def get_log(self, base: str | None) -> list[str]:
+        with open(f".pbm/bases/{base or self.get_default_base()}/logs") as file:
+            return file.read().split("\n")
 
-    @staticmethod
-    def set_secrets(cont: dict[int, str]) -> None:
-        with open(".pbm/secrets", "w") as file:
-            file.write(str(cont))
+    def add_log(self, base: str | None, message: str | None = None, time: str | None = None) -> None:
+        with open(f".pbm/bases/{base or self.get_default_base()}/logs", "a") as file:
+            file.write(f"\n{time or datetime.now().strftime("%d-%m-%Y %H:%M:%S")}: build \"{message or f"unmarked commit "+str(randint(0, 9999))}\"")
 
     def set_default_base_endpoint(self, name: str | None = None) -> None:
         """
@@ -183,9 +196,9 @@ class PBM:
 
         name = name or "main"
 
-        logger.warning(paint("this will rename the physical default base directory as well as defaults in commands"))
-        logger.warning(paint(f"from '{self.get_default_base()}' to '{name}'. this action cannot be undone."))
-        logger.warning(paint(f"your bases will be saved and won't be lost during the refactoring."))
+        logger.warning("this will rename the physical default base directory as well as defaults in commands")
+        logger.warning(f"from '{self.get_default_base()}' to '{name}'. this action cannot be undone.")
+        logger.warning(f"your bases will be saved and won't be lost during the refactoring.")
 
         if confirmation():
             self.set_default_base(name)
@@ -193,7 +206,8 @@ class PBM:
     @staticmethod
     def ensure_pbm_dir() -> None:
         if not os.path.exists(".pbm"):
-            logger.fatal(paint("not a pbm repo, no .pbm directory."))
+            logger.fatal("not a pbm repo, no .pbm directory.")
+
             exit(1)
 
     def destroy(self, **_) -> bool:
@@ -209,17 +223,18 @@ class PBM:
 
         self.ensure_pbm_dir()
 
-        logger.warning(paint("this will also detonate all bases of the pbm repo IN THE ./ (CURRENT) DIRECTORY. consider using `pbm base export . *` to back up your bases."))
-        logger.warning(paint("are you sure you want to continue?"))
+        logger.warning(
+            "this will also detonate all bases of the pbm repo IN THE ./ (CURRENT) DIRECTORY. consider using `pbm base export . *` to back up your bases.")
+        logger.warning("are you sure you want to continue?")
 
         if confirmation():
             rmdir(".pbm")
-            logger.info(paint("pbm repo destroyed successfully"))
+            logger.info("pbm repo destroyed successfully")
 
             return True
 
         else:
-            logger.warning(paint("cancelled pbm repo destruction"))
+            logger.warning("cancelled pbm repo destruction")
 
         return False
 
@@ -243,52 +258,111 @@ class PBM:
             self.init()
             new_version = self.get_version()
 
-            logger.info(paint(f"pbm repo reinitialized successfully"))
-            logger.info(paint(f"{old_version} -> {new_version}"))
+            logger.info(f"pbm repo reinitialized successfully")
+            logger.info(f"{old_version} -> {new_version}")
         else:
-            logger.warning(paint("cancelled pbm repo reinitialization"))
+            logger.warning("cancelled pbm repo reinitialization")
 
     class Base:
         def __init__(self, pbm_instance: "PBM") -> None:
             self.pbm: PBM = pbm_instance
 
-        def build(self, base: str | None = None, fn: str | None = None, build_src: bool = True, **_) -> None:
+        def build(self,
+            base: str | None = None,
+            fn: str | None = None,
+            build_src: bool = True,
+            message: str | None = None,
+            **_
+        ) -> None:
             """
-            Command: `pbm build [base] [file]`
+            Command: `pbm build [base]`
 
-            Builds [file] from . to [base].
-            [file] is 'main.py' by default.
+            Builds main.py from . to [base].
 
-            UPDATED IN 1.6:
+            PBM v1.8+ enforces that all repos' entrypoints are 'main.py'.
+
+            UPDATED IN v1.6:
                 Building now creates a copy of all files in a hidden 'src'
-                directory to allow for 'fetch'. Use the '--no-src' option to
+                directory to allow for fetch functionality. Use the '--no-src' option to
                 stop this from happening. This will also make this base
                 unfetchable.
 
             Use `pbm run` to run your builds.
             """
 
-            logger.warning(paint(f"this will overwrite your '{base}' build"))
+            self.pbm.ensure_pbm_dir()
+            base = base or self.pbm.get_default_base()
+
+            if not os.path.exists(f".pbm/bases/{base}"):
+                logger.error("cannot build in a base that does not exist")
+
+                return
+
+            logger.warning(f"this will overwrite your '{base}' build")
+            logger.warning("are you sure you want to continue?")
 
             if confirmation():
-                self.pbm.ensure_pbm_dir()
-
                 fn = fn or "main.py"
+
+                rmdir(f".pbm/bases/{base}")
+                mkdir(f".pbm/bases/{base}")
+
+                if fn not in os.listdir():
+                    logger.error("pbm v1.8+ enforces that all repos' entrypoints are 'main.py'.")
+                    logger.error("please add a 'main.py' file to your repo's root directory.")
+
+                    return
 
                 with open(".pbm/cx_freeze_setup.py", "w") as file:
                     file.write(CX_FREEZE_SETUP.format(fn))
 
                 os.system(f"python .pbm/cx_freeze_setup.py build_exe --build-exe .pbm/bases/{base}")
 
-                logger.info(paint("build completed successfully"))
+                logger.info("build completed successfully")
 
                 if build_src:
-                    shutil.copytree("./", f".pbm/bases/{base}/src")
+                    self.build_src(base, True)
 
-                    rmdir(f".pbm/bases/{base}/src/.pbm")
+                self.pbm.add_log(base, message)
+
+                logger.info("commit was successful.")
 
             else:
-                logger.warning(paint("cancelled standard build"))
+                logger.warning("cancelled standard build")
+
+        @staticmethod
+        def ignore_pbm_dir(_, cont: list[str]) -> list[str]:
+            return [d for d in cont if d == ".pbm"]
+
+        def build_src(self, base: str | None = None, skip_conf: bool = False) -> None:
+            self.pbm.ensure_pbm_dir()
+
+            if not skip_conf:
+                logger.warning(f"this will overwrite the src of your '{base}' build")
+                logger.warning("are you sure you want to continue?")
+
+                if not confirmation():
+                    logger.error("operation cancelled.")
+
+                    return
+
+            logger.info("building src...")
+
+            rmdir(f".pbm/bases/{base}/src")
+            shutil.copytree(".", f".pbm/bases/{base}/src", ignore=lambda src, cont: [".pbm"])
+
+            logger.info("src built successfully")
+
+        def check(self, base: str | None = None) -> None:
+            self.pbm.ensure_pbm_dir()
+            base = base or self.pbm.get_default_base()
+
+            logger.info(f"pbm repository in {os.getcwd()} base {base}: diagnosis")
+            logger.info(f"built: {"yes" if os.listdir(f".pbm/bases/{base}") else "no"}")
+            logger.info(f"src built: {"yes" if "src" in os.listdir(f".pbm/bases/{base}") else "no"}")
+            logger.info(f"commits on this base:")
+            for log in self.pbm.get_log(base):
+                logger.info(log)
 
         def new_base(self, base: str) -> None:
             """
@@ -305,17 +379,18 @@ class PBM:
                      that the base is up and running properly when created.
 
                      You may still use `create-base` if you want,
-                     but it's discouraged for large repositories where
+                     but it's discouraged for large repos where
                      file safety is key.
             """
 
             self.pbm.ensure_pbm_dir()
 
             if os.path.exists(f".pbm/bases/{base}"):
-                logger.warning(paint(f"base '{base}' already exists"))
+                logger.error(f"base '{base}' already exists")
+
             else:
                 mkdir(f".pbm/bases/{base}")
-                logger.info(paint(f"base '{base}' created successfully"))
+                logger.info(f"base '{base}' created successfully")
 
         def export_all(self, location: str) -> None:
             self.pbm.ensure_pbm_dir()
@@ -328,7 +403,7 @@ class PBM:
             shutil.copytree(f".pbm/bases", f"{location.strip('/\\')}/g{export_id}.pbm")
             rmdir(f".pbm/global_export_{export_id}")
 
-            logger.info(paint(f"successfully created global export 'g{export_id}'"))
+            logger.info(f"successfully created global export 'g{export_id}'")
 
         def export_base(self, location: str, base: str) -> None:
             """
@@ -363,9 +438,9 @@ class PBM:
                 return
 
             shutil.make_archive(f"{location.strip('/\\')}/export_{export_id}", "zip", f".pbm/bases/{base}")
-            shutil.copytree(f".pbm/bases/{base}", f"{location.strip('/\\')}/{export_id}.pbm")
+            shutil.copytree(f".pbm/bases/{base}", f"{location.strip("/\\")}/{export_id}.pbm")
 
-            logger.info(paint(f"successfully created export '{export_id}'"))
+            logger.info(f"successfully created export '{export_id}'")
 
         def import_base(self, export_id: str, base: str, location: str | None = None) -> None:
             """
@@ -388,14 +463,15 @@ class PBM:
             self.new_base(base)
             self.pbm.ensure_pbm_dir()
 
-            logger.warning(paint("this may also detonate all bases of this pbm repo (and replace them with the imported ones) if a global export is being imported. consider creating a new pbm repo in a separate directory, and merging manually."))
+            logger.warning(
+                "this may also detonate all bases of this pbm repo (and replace them with the imported ones) if a global export is being imported. consider creating a new pbm repo in a separate directory, and merging manually.")
 
             if confirmation():
                 location = location or "."
                 source_path = f"{location}/{export_id}.pbm"
 
                 if not os.path.exists(source_path):
-                    logger.error(paint(f"import failed: {source_path} does not exist."))
+                    logger.error(f"import failed: {source_path} does not exist.")
                     return
 
                 if export_id.startswith("g"):
@@ -403,15 +479,16 @@ class PBM:
                     if os.path.exists(target_path):
                         rmdir(target_path)
                     shutil.copytree(source_path, target_path)
-                    logger.info(paint(f"successfully imported global export '{export_id}'"))
+                    logger.info(f"successfully imported global export '{export_id}'")
+                    
                 else:
                     target_path = f".pbm/bases/{base}"
                     if os.path.exists(target_path):
                         rmdir(target_path)
                     shutil.copytree(source_path, target_path)
-                    logger.info(paint(f"successfully imported base '{base}' from export '{export_id}'"))
+                    logger.info(f"successfully imported base '{base}' from export '{export_id}'")
             else:
-                logger.warning(paint("cancelled base import"))
+                logger.warning("cancelled base import")
 
         def delete_base(self, base: str | None = None) -> None:
             """
@@ -424,19 +501,19 @@ class PBM:
 
             base = base or self.pbm.get_default_base()
 
-            logger.warning(paint(f"this will delete your '{base}' build. consider using `pbm export . {base}` to back up this build."))
-            logger.warning(paint("are you sure you want to continue?"))
+            logger.warning(f"this will delete your '{base}' build. consider using `pbm export . {base}` to back up this build.")
+            logger.warning("are you sure you want to continue?")
 
             if confirmation():
                 try:
                     rmdir(f".pbm/bases/{base}")
                 except FileNotFoundError:
-                    logger.error(paint(f"that base '{base}' does not exist."))
+                    logger.error(f"that base '{base}' does not exist.")
                     return
 
-                logger.info(paint("base deleted successfully"))
+                logger.info("base deleted successfully")
             else:
-                logger.warning(paint("cancelled base deletion"))
+                logger.warning("cancelled base deletion")
 
         def detonate(self, base: str | None = None) -> None:
             """
@@ -446,28 +523,28 @@ class PBM:
             the build within it. Useful for memory-efficiency and cleanup.
 
             Detonating a non-existent base will in turn create it.
-            This is the recommended approach to creating bases.
+            This is the recommended approach for creating bases.
             """
 
             self.pbm.ensure_pbm_dir()
 
             base = base or self.pbm.get_default_base()
 
-            logger.warning(paint(f"this will detonate your '{base}' build"))
-            logger.warning(paint("are you sure you want to continue?"))
+            logger.warning(f"this will detonate your '{base}' build")
+            logger.warning("are you sure you want to continue?")
 
             if confirmation():
                 try:
                     rmdir(f".pbm/bases/{base}")
                 except FileNotFoundError:
-                    logger.error(paint(f"that base '{base}' does not exist."))
+                    logger.error(f"that base '{base}' does not exist.")
                     return
 
                 mkdir(f".pbm/bases/{base}")
-                logger.info(paint("base detonated successfully"))
+                logger.info("base detonated successfully")
 
             else:
-                logger.warning(paint("cancelled base detonation"))
+                logger.warning("cancelled base detonation")
                 
         def run(self, base: str | None = None) -> None:
             """
@@ -489,11 +566,36 @@ class PBM:
 
                     return
 
-                logger.info(paint(f"running '{base}' build\n\n"))
-                os.system(f".pbm\\bases\\{base}\\{exe_file}")
+                logger.info(f"running '{base}' build...\n\n")
+                result: subprocess.CompletedProcess = subprocess.run(
+                    f".pbm\\bases\\{base}\\{exe_file}",
+                    capture_output=True,
+                    text=True
+                )
+                print(result.stdout)
 
             except IndexError:
-                logger.error(paint(f"base '{base}' is not built."))
+                logger.error(f"base '{base}' is not built.")
+
+        def run_src(self, base: str | None = None) -> None:
+            self.pbm.ensure_pbm_dir()
+
+            base = base or self.pbm.get_default_base()
+
+            if os.path.exists(f".pbm/bases/{base}/src"):
+                if "main.py" not in os.listdir(f".pbm/bases/{base}/src"):
+                    logger.error(f"the 'src' of base '{base}' is not built on 'main.py'.")
+
+                    return
+
+                logger.info(f"running src of '{base}' build...\n\n")
+
+                os.system(f"python .pbm/bases/{base}/src/main.py")
+
+                print()
+
+            else:
+                logger.error(f"base '{base}' does not exist, or does not have a built 'src'.")
 
         def fetch(self, base: str | None = None) -> None:
             """
@@ -503,13 +605,27 @@ class PBM:
             respective files in [base]/src. Fetching cannot be undone.
             """
 
+            self.pbm.ensure_pbm_dir()
+
             base = base or self.pbm.get_default_base()
 
-            if os.path.exists(f".pbm/bases/{base}/src"):
-                shutil.copytree(f".pbm/bases/{base}/src", "./")
+            base = base or self.pbm.get_default_base()
+
+            logger.warning(f"this will overwrite all files in . with their respective files in the src of '{base}'.")
+            logger.warning("are you sure you want to continue?")
+
+            if confirmation():
+                if os.path.exists(f".pbm/bases/{base}/src"):
+                    for file in os.listdir(f".pbm/bases/{base}/src"):
+                        shutil.copy(f".pbm/bases/{base}/src/{file}", file)
+
+                    logger.info(f"successfully fetched from '{base}'")
+
+                else:
+                    logger.error(f"{base} either doesn't exist, is not built, or is built without a 'src'.")
 
             else:
-                logger.error(f"{base} is either not built, or built without a 'src'.")
+                logger.error("operation cancelled.")
 
     def status(self, _: None = None) -> None:
         self.ensure_pbm_dir()
@@ -518,10 +634,10 @@ class PBM:
         default_base: str = self.get_default_base()
         builds: list[str] = os.listdir(".pbm/bases")
 
-        logger.info(paint("pbm repository in './': diagnosis"))
-        logger.info(paint(f"version: {version} ({f"outdated by {self.latest_version}" if self.get_version() != self.latest_version else "up to date"})"))
-        logger.info(paint(f"default base: {default_base}"))
-        logger.info(paint(f"available bases: [{", ".join(builds) if builds else "no bases available"}]"))
+        logger.info(f"pbm repository in {os.getcwd()}: diagnosis")
+        logger.info(f"version: {version} ({f"outdated by {self.latest_version}" if self.get_version() != self.latest_version else "up to date"})")
+        logger.info(f"default base: {default_base}")
+        logger.info(f"available bases: [{", ".join(builds) if builds else "no bases available"}]")
 
     @staticmethod
     def write() -> None: # EMPTY METHOD JUST FOR THE HELP FUNCTIONALITY
@@ -540,8 +656,8 @@ class PBM:
         """
         ...
 
-    def console(self, _ = None) -> None:
-        logger.info("entered pbm console. use 'exit' or press 'CTRL + C' to quit.")
+    def console(self) -> None:
+        logger.info("entered pbm console. use 'exit' or press 'ctrl + c' to quit.")
         logger.info("")
         logger.info("pbm by @elemenom on github")
         logger.info(f"    distribution {self.latest_version}")
@@ -561,14 +677,39 @@ class PBM:
                 elif action == "clear":
                     os.system("clear")
 
+                elif action.startswith("echo "):
+                    print(action[5:])
+
+                elif action.startswith("rm "):
+                    logger.warning(f"this would delete the file '{action[3:]}'. this action may be permanent.")
+
+                    if confirmation():
+                        os.remove(action[3: ])
+
+                elif action.startswith("rmdir "):
+                    logger.warning(f"this would delete the directory and it's children '{action[3:]}'. this action may be permanent.")
+
+                    if confirmation():
+                        os.remove(action[6:])
+
                 elif action.startswith("cd "):
                     try:
                         os.chdir(action[3:])
                     except FileNotFoundError:
                         logger.error(f"{action[3:]}: no such file or directory")
 
-                elif action.startswith(";"):
-                    os.system(action[1:])
+                elif action.startswith("read "):
+                    with open(action[5:]) as file:
+                        print(file.read())
+
+                elif action.startswith("tree "):
+                    os.system(f"tree {action[5:]}")
+
+                elif action.startswith("ls "):
+                    print("\n".join(os.listdir(action[3:])))
+
+                elif action.startswith("dir "):
+                    print(",".join(os.listdir(action[4:])))
 
                 else:
                     os.system(f"python -m pbm {action}")

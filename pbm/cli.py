@@ -1,93 +1,150 @@
-import sys, os
+import sys, os, shutil
+import time
+from time import perf_counter
 from typing import Callable
 
 from .get_pbm import get_pbm, get_base
-from .pbm import logger
+from .pbm import logger, mkdir, choice_map
 
 def main() -> None:
-    command: str = sys.argv[1] if len(sys.argv) > 1 else "console"
+    try:
+        command: str = sys.argv[1] if len(sys.argv) > 1 else "console"
 
-    if get_pbm().get_version() != get_pbm().latest_version:
-        logger.warning(f"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')")
-        logger.warning("&ruse `pbm reinit` to upgrade.")
+        if get_pbm().get_version() != get_pbm().latest_version:
+            logger.warning(f"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')")
+            logger.warning("use `pbm reinit` to upgrade.")
 
-    match command:
-        case "init":
-            get_pbm().init()
+        match command:
+            case "init":
+                get_pbm().init()
 
-        case "reinit":
-            get_pbm().reinit()
+            case "reinit":
+                get_pbm().reinit()
 
-        case "destroy":
-            get_pbm().destroy()
+            case "destroy":
+                get_pbm().destroy()
 
-        case "build":
-            get_base().build(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base(), sys.argv[3] if len(sys.argv) > 3 else "main.py")
+            case "commit":
+                get_base().build(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base(), message=sys.argv[3] if len(sys.argv) > 3 else None, build_src="--no-src" not in sys.argv)
 
-        case "create-base":
-            logger.warning("&create-base is deprecated, but can still be used. for more information, see `pbm help base new_base`")
+            case "commit-src":
+                get_base().build_src(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-            get_base().new_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+            case "check":
+                get_base().check(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-        case "delete-base":
-            get_base().delete_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+            case "create-base":
+                logger.warning("create-base is deprecated, but can still be used. for more information, see `pbm help base new_base`")
 
-        case "export":
-            get_base().export_base(sys.argv[2] if len(sys.argv) > 2 else ".", sys.argv[3] if len(sys.argv) > 3 else "*")
+                get_base().new_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-        case "import":
-            get_base().import_base(sys.argv[2] if len(sys.argv) > 2 else "0000", sys.argv[3] if len(sys.argv) > 3 else get_pbm().get_default_base(), sys.argv[4] if len(sys.argv) > 4 else ".")
+            case "delete-base":
+                get_base().delete_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-        case "detonate":
-            get_base().detonate(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+            case "export":
+                get_base().export_base(sys.argv[2] if len(sys.argv) > 2 else ".", sys.argv[3] if len(sys.argv) > 3 else "*")
 
-        case "run":
-            get_base().run(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+            case "import":
+                get_base().import_base(sys.argv[2] if len(sys.argv) > 2 else "0000", sys.argv[3] if len(sys.argv) > 3 else get_pbm().get_default_base(), sys.argv[4] if len(sys.argv) > 4 else ".")
 
-        case "status":
-            get_pbm().status()
+            case "detonate":
+                get_base().detonate(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-        case "write":
-            logger.warning("&pbm write uses neovim to simulate a simple command-line ide for you to code in.")
-            logger.warning("&bif you do not have neovim installed, you can install it here:")
-            logger.warning("&b[-] https://github.com/neovim/neovim/blob/master/INSTALL.md")
-            logger.warning("&have neovim installed, but write isn't working?")
-            logger.warning("&try running pbm write in a different terminal (windows terminal should work well).")
+            case "run":
+                get_base().run(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-            os.system(f"nvim {sys.argv[2] if len(sys.argv) > 2 else "main.py"}")
+            case "test":
+                base: str = sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base()
 
-        case "set-default-base":
-            get_pbm().set_default_base_endpoint(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+                logger.debug(f"testing base '{base}' through executable")
+                start: float = time.perf_counter()
+                get_base().run(base)
+                exec_time: float = (perf_counter() - start) * 1000
+                logger.debug(f"took {exec_time:.6f}ms to run through executable")
 
-        case "help":
-            subject: str = sys.argv[3] if len(sys.argv) > 3 else ""
+                logger.debug(f"testing base '{base}' through src")
+                start = time.perf_counter()
+                get_base().run_src(base)
+                src_time: float = (perf_counter() - start) * 1000
+                logger.debug(f"took {src_time:.6f}ms to run through src")
 
-            if subject == "":
-                logger.info("&please enter a subject you need help with.")
+                logger.debug(f"on average, running through {"executable" if src_time > exec_time else "src"} ran faster than {"executable" if src_time < exec_time else "src"} in this test.")
 
-            try:
-                sector: Callable | None = {
-                    "pbm": get_pbm,
-                    "base": get_base
-                }.get(sys.argv[2] if len(sys.argv) > 2 else "pbm")
+            case "dist":
+                base: str = sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base()
 
-                if sector is None:
-                    logger.error(f"&r'{sys.argv[2]}' is an invalid sector")
+                mkdir("dist")
+                shutil.copy(f".pbm/bases/{base}/main.exe", "./dist/dist.exe")
 
-                print((getattr(sector(), subject).__doc__ or f"no provided help for 'pbm/{subject}'. sorry!").lower())
+                logger.info(f"created distribution of base '{base}' in dist/")
 
-            except AttributeError:
-                logger.error(f"&r'{subject}' is an invalid subject")
+            case "run-src":
+                get_base().run_src(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-        case "panel":
-            logger.info("opening pbm control panel.")
+            case "fetch":
+                get_base().fetch(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
-            from .desktop import launch_pbm_desktop
+            case "status":
+                get_pbm().status()
 
-            launch_pbm_desktop()
+            case "write":
+                logger.info("pbm write uses neovim to simulate a simple command-line ide for you to code in.")
+                logger.info("if you do not have neovim installed, you can install it here:")
+                logger.info("[-] https://github.com/neovim/neovim/blob/master/INSTALL.md")
+                logger.info("have neovim installed, but write isn't working?")
+                logger.info("try running pbm write in a different terminal (windows terminal should work well).")
 
-        case "console":
-            get_pbm().console()
+                os.system(f"nvim {sys.argv[2] if len(sys.argv) > 2 else "main.py"}")
 
-        case _:
-            logger.error(f"unknown command: '{command}'")
+            case "set-default-base":
+                get_pbm().set_default_base_endpoint(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+
+            case "help":
+                subject: str = sys.argv[3] if len(sys.argv) > 3 else ""
+
+                if subject == "":
+                    logger.info("please enter a subject you need help with.")
+
+                try:
+                    sector: Callable | None = {
+                        "pbm": get_pbm,
+                        "base": get_base
+                    }.get(sys.argv[2] if len(sys.argv) > 2 else "pbm")
+
+                    if sector is None:
+                        logger.error(f"'{sys.argv[2]}' is an invalid sector")
+
+                    print((getattr(sector(), subject).__doc__ or f"no provided help for 'pbm/{subject}'. sorry!").lower())
+
+                except AttributeError:
+                    logger.error(f"r'{subject}' is an invalid subject")
+
+            case "panel":
+                logger.warning("panel is deprecated. it will not receive bug fixes, or updates of any kind")
+                logger.warning("except for security fixes. new features will not be implemented to panel.")
+
+                logger.info("opening pbm control panel. panel is in alpha, so not many visual features are implemented. have a nice day!")
+
+                from .desktop import launch_pbm_desktop
+
+                launch_pbm_desktop()
+
+            case "console":
+                get_pbm().console()
+
+            case _:
+                logger.error(f"unknown command: '{command}'")
+
+    except Exception as err:
+        try:
+            logger.error(f"pbm encountered an unexpected error: {type(err).__name__}")
+
+            if input("press enter to exit ") == "verbose":
+                raise err
+
+            exit(1)
+
+        except KeyboardInterrupt:
+            ...
+
+        exit(1)
