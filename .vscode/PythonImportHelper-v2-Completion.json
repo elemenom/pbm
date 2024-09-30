@@ -44,6 +44,23 @@
         "documentation": {}
     },
     {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "perf_counter",
+        "importPath": "time",
+        "description": "time",
+        "isExtraImport": true,
+        "detail": "time",
+        "documentation": {}
+    },
+    {
         "label": "Callable",
         "importPath": "typing",
         "description": "typing",
@@ -68,75 +85,28 @@
         "documentation": {}
     },
     {
-        "label": "Callable",
-        "importPath": "typing",
-        "description": "typing",
+        "label": "tkinter",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "typing",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "detail": "tkinter",
         "documentation": {}
     },
     {
-        "label": "Callable",
-        "importPath": "typing",
-        "description": "typing",
+        "label": "filedialog",
+        "importPath": "tkinter",
+        "description": "tkinter",
         "isExtraImport": true,
-        "detail": "typing",
+        "detail": "tkinter",
         "documentation": {}
     },
     {
-        "label": "Any",
-        "importPath": "typing",
-        "description": "typing",
+        "label": "messagebox",
+        "importPath": "tkinter",
+        "description": "tkinter",
         "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "randint",
-        "importPath": "random",
-        "description": "random",
-        "isExtraImport": true,
-        "detail": "random",
-        "documentation": {}
-    },
-    {
-        "label": "randint",
-        "importPath": "random",
-        "description": "random",
-        "isExtraImport": true,
-        "detail": "random",
-        "documentation": {}
-    },
-    {
-        "label": "setup",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "Executable",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "setup",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
-        "documentation": {}
-    },
-    {
-        "label": "Executable",
-        "importPath": "cx_Freeze",
-        "description": "cx_Freeze",
-        "isExtraImport": true,
-        "detail": "cx_Freeze",
+        "detail": "tkinter",
         "documentation": {}
     },
     {
@@ -247,139 +217,49 @@
     {
         "label": "main",
         "kind": 2,
-        "importPath": "build.lib.pbm.cli",
-        "description": "build.lib.pbm.cli",
-        "peekOfCode": "def main() -> None:\n    if len(sys.argv) < 2:\n        logger.error(\"missing command, use `pbm <command> [args]`\")\n        return\n    if get_pbm().get_version() != get_pbm().latest_version:\n        logger.warning(f\"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n        logger.warning(\"&ruse `pbm reinit` to upgrade.\")\n    for arg in sys.argv[1].split(\",\"):\n        match arg:\n            case \"init\":",
-        "detail": "build.lib.pbm.cli",
-        "documentation": {}
-    },
-    {
-        "label": "get_pbm",
-        "kind": 2,
-        "importPath": "build.lib.pbm.get_pbm",
-        "description": "build.lib.pbm.get_pbm",
-        "peekOfCode": "def get_pbm() -> PBM:\n    return PBM()\ndef get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj",
-        "detail": "build.lib.pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "get_base",
-        "kind": 2,
-        "importPath": "build.lib.pbm.get_pbm",
-        "description": "build.lib.pbm.get_pbm",
-        "peekOfCode": "def get_base() -> PBM.Base:\n    pbm: PBM = get_pbm()\n    return pbm.Base(pbm)\ndef run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
-        "detail": "build.lib.pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "run_pbm",
-        "kind": 2,
-        "importPath": "build.lib.pbm.get_pbm",
-        "description": "build.lib.pbm.get_pbm",
-        "peekOfCode": "def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
-        "detail": "build.lib.pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "ColoredFormatter",
-        "kind": 6,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "class ColoredFormatter(logging.Formatter):\n    COLORS: dict[str, str] = {\n        \"DEBUG\": \"&c\",\n        \"INFO\": \"&g\",\n        \"WARNING\": \"&y\",\n        \"ERROR\": \"&r\",\n        \"CRITICAL\": \"&m\"\n    }\n    def format(self, record) -> str:\n        levelname = record.levelname",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "PBM",
-        "kind": 6,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "class PBM:\n    latest_version: str = \"v1.5.2\"\n    def init(self, path: str | None = None) -> None:\n        \"\"\"\n        Command: `pbm init [location]`\n        Initializes a new PBM blank repository at the specified [location] (. by default).\n        Running this creates the following paths on your system:\n        [location]/.pbm/\n        [location]/.pbm/bases/\n        [location]/.pbm/bases/main/",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "mkdir",
-        "kind": 2,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "def mkdir(path: str) -> bool:\n    if os.path.exists(path):\n        return False\n    os.mkdir(path)\n    return True\ndef rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "rmdir",
-        "kind": 2,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "def rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True\ndef choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "choice_map",
-        "kind": 2,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "def choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:\n            return inp\ndef confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "confirmation",
-        "kind": 2,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "def confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True\n    return choice_map(\"[y]es (confirm) | [n]o (cancel)\", \"y\", \"n\") == \"y\"\ndef paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "paint",
-        "kind": 2,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "def paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\\n        .replace(\"&b\", \"\\033[34m\")\\\n        .replace(\"&m\", \"\\033[35m\")\\\n        .replace(\"&c\", \"\\033[36m\")\\\n        .replace(\"&w\", \"\\033[37m\")\\\n        .replace(\"&0\", \"\\033[0m\")\\",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "logger.handlers",
-        "kind": 5,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "logger.handlers = []\nlogger.addHandler(handler)\nlogger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "logger.propagate",
-        "kind": 5,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "logger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "build_options",
-        "kind": 5,
-        "importPath": "build.lib.pbm.pbm",
-        "description": "build.lib.pbm.pbm",
-        "peekOfCode": "build_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}\nsetup(name=\"pbm repo\",\n      version = \"1\",\n      description = \"PBM build\",",
-        "detail": "build.lib.pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "main",
-        "kind": 2,
         "importPath": "pbm.cli",
         "description": "pbm.cli",
-        "peekOfCode": "def main() -> None:\n    if len(sys.argv) < 2:\n        logger.error(\"missing command, use `pbm <command> [args]`\")\n        return\n    if get_pbm().get_version() != get_pbm().latest_version:\n        logger.warning(f\"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n        logger.warning(\"&ruse `pbm reinit` to upgrade.\")\n    for arg in sys.argv[1].split(\",\"):\n        match arg:\n            case \"init\":",
+        "peekOfCode": "def main() -> None:\n    try:\n        command: str = sys.argv[1] if len(sys.argv) > 1 else \"console\"\n        if get_pbm().get_version() != get_pbm().latest_version:\n            logger.warning(f\"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')\")\n            logger.warning(\"use `pbm reinit` to upgrade.\")\n        match command:\n            case \"init\":\n                get_pbm().init()\n            case \"reinit\":",
         "detail": "pbm.cli",
         "documentation": {}
     },
     {
+        "label": "continue_in_terminal_popup",
+        "kind": 2,
+        "importPath": "pbm.desktop",
+        "description": "pbm.desktop",
+        "peekOfCode": "def continue_in_terminal_popup(_ = None) -> None:\n    messagebox.showinfo(\"message\", \"please continue in the terminal.\")\ndef fetch_input(*find: str) -> tuple[str, ...]:\n    continue_in_terminal_popup()\n    r: list[str] = []\n    for f in find:\n        r.append(input(f\"please enter the {f} >> \"))\n    return (*r,)\ndef open_pbm_project(path: str) -> None:\n    logs: list[str] = [",
+        "detail": "pbm.desktop",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_input",
+        "kind": 2,
+        "importPath": "pbm.desktop",
+        "description": "pbm.desktop",
+        "peekOfCode": "def fetch_input(*find: str) -> tuple[str, ...]:\n    continue_in_terminal_popup()\n    r: list[str] = []\n    for f in find:\n        r.append(input(f\"please enter the {f} >> \"))\n    return (*r,)\ndef open_pbm_project(path: str) -> None:\n    logs: list[str] = [\n        f\"info: a path was passed to pbm.ui successfully: '{path}'\"\n    ]",
+        "detail": "pbm.desktop",
+        "documentation": {}
+    },
+    {
+        "label": "open_pbm_project",
+        "kind": 2,
+        "importPath": "pbm.desktop",
+        "description": "pbm.desktop",
+        "peekOfCode": "def open_pbm_project(path: str) -> None:\n    logs: list[str] = [\n        f\"info: a path was passed to pbm.ui successfully: '{path}'\"\n    ]\n    if not path.lower().startswith(\"c:\"):\n        messagebox.showerror(\"error\", f\"'{path}' is not supported. please enter an absolute path ('c:/...')\")\n        return\n    os.chdir(path)\n    logs.append(f\"info: changed working directory to '{path}'\")\n    if \".pbm\" in os.listdir(path):",
+        "detail": "pbm.desktop",
+        "documentation": {}
+    },
+    {
+        "label": "launch_pbm_desktop",
+        "kind": 2,
+        "importPath": "pbm.desktop",
+        "description": "pbm.desktop",
+        "peekOfCode": "def launch_pbm_desktop() -> None:\n    root: tk.Tk = tk.Tk()\n    root.title(\"pbm control panel (no directory open)\")\n    tk.Label(root, text=\"open or init a project\", font=\"arial 20 bold\").pack(pady=10)\n    tk.Label(root, text=\"choose a path:\").pack(pady=20)\n    entry: tk.Entry = tk.Entry(root, width=60)\n    entry.pack(pady=10)\n    tk.Button(root, text=\"open\", command=lambda: open_pbm_project(entry.get())).pack(pady=10)\n    tk.Label(root, text=\"-- or --\", font=\"arial 13 bold\").pack(pady=10)\n    tk.Button(root, text=\"choose in explorer\", command=lambda: open_pbm_project(filedialog.askdirectory(",
+        "detail": "pbm.desktop",
+        "documentation": {}
+    },
+    {
         "label": "get_pbm",
         "kind": 2,
         "importPath": "pbm.get_pbm",
@@ -404,96 +284,6 @@
         "description": "pbm.get_pbm",
         "peekOfCode": "def run_pbm(obj: str | Callable, command: str, *args, **kwargs) -> Any:\n    obj = eval(obj, {\n        \"get_pbm\": get_pbm,\n        \"get_base\": get_base\n    })() if isinstance(obj, str) else obj\n    return getattr(obj, command)(*args, **kwargs)",
         "detail": "pbm.get_pbm",
-        "documentation": {}
-    },
-    {
-        "label": "ColoredFormatter",
-        "kind": 6,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "class ColoredFormatter(logging.Formatter):\n    COLORS: dict[str, str] = {\n        \"DEBUG\": \"&c\",\n        \"INFO\": \"&g\",\n        \"WARNING\": \"&y\",\n        \"ERROR\": \"&r\",\n        \"CRITICAL\": \"&m\"\n    }\n    def format(self, record) -> str:\n        levelname = record.levelname",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "PBM",
-        "kind": 6,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "class PBM:\n    latest_version: str = \"v1.5.2\"\n    def init(self, path: str | None = None) -> None:\n        \"\"\"\n        Command: `pbm init [location]`\n        Initializes a new PBM blank repository at the specified [location] (. by default).\n        Running this creates the following paths on your system:\n        [location]/.pbm/\n        [location]/.pbm/bases/\n        [location]/.pbm/bases/main/",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "mkdir",
-        "kind": 2,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "def mkdir(path: str) -> bool:\n    if os.path.exists(path):\n        return False\n    os.mkdir(path)\n    return True\ndef rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "rmdir",
-        "kind": 2,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "def rmdir(path: str) -> bool:\n    if not os.path.exists(path):\n        return False\n    shutil.rmtree(path)\n    return True\ndef choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "choice_map",
-        "kind": 2,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "def choice_map(message: str, *choices: str, explicit_case: bool = False) -> str:\n    while True:\n        inp: str = input(f\"\\n\\n\\n{message}\\n      :\").strip()\n        inp = inp if explicit_case else inp.lower()\n        if inp in choices:\n            return inp\ndef confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "confirmation",
-        "kind": 2,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "def confirmation() -> bool:\n    if \"-y\" in sys.argv or \"--yes\" in sys.argv:\n        print(\"[y]es (confirm) | [n]o (cancel)\\n      :autofill 'y'\")\n        return True\n    return choice_map(\"[y]es (confirm) | [n]o (cancel)\", \"y\", \"n\") == \"y\"\ndef paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "paint",
-        "kind": 2,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "def paint(cont: str) -> str:\n    return cont\\\n        .replace(\"&g\", \"\\033[32m\")\\\n        .replace(\"&r\", \"\\033[31m\")\\\n        .replace(\"&y\", \"\\033[33m\")\\\n        .replace(\"&b\", \"\\033[34m\")\\\n        .replace(\"&m\", \"\\033[35m\")\\\n        .replace(\"&c\", \"\\033[36m\")\\\n        .replace(\"&w\", \"\\033[37m\")\\\n        .replace(\"&0\", \"\\033[0m\")\\",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "logger.handlers",
-        "kind": 5,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "logger.handlers = []\nlogger.addHandler(handler)\nlogger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "logger.propagate",
-        "kind": 5,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "logger.propagate = False\nCX_FREEZE_SETUP: str = \"\"\"\nfrom cx_Freeze import setup, Executable\nbuild_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}",
-        "detail": "pbm.pbm",
-        "documentation": {}
-    },
-    {
-        "label": "build_options",
-        "kind": 5,
-        "importPath": "pbm.pbm",
-        "description": "pbm.pbm",
-        "peekOfCode": "build_options = {{\n    \"packages\": [],\n    \"excludes\": [\n        \"PyQt6\",\n        \"PyQt5\"\n    ]\n}}\nsetup(name=\"pbm repo\",\n      version = \"1\",\n      description = \"PBM build\",",
-        "detail": "pbm.pbm",
         "documentation": {}
     }
 ]

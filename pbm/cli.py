@@ -1,14 +1,30 @@
-import sys, os, shutil
-import time
+import sys, os, shutil, time
+
 from time import perf_counter
-from typing import Callable
+from typing import Callable, Final
 
 from .get_pbm import get_pbm, get_base
 from .pbm import logger, mkdir, choice_map
 
+CREDITS: Final[str] = """
+pbm {v} since 2024 by @elemenom on github
+build on {b}
+
+    pip install pbm-root
+
+[*] https://github.com/elemenom
+[*] https://pypi.org/user/elemenom
+
+[-] https://github.com/elemenom/pbm
+[-] https://pypi.org/project/pbm-root
+
+pbm is licensed under a gnu general public license v3
+more info at https://www.gnu.org/licenses/gpl-3.0.en.html
+"""
+
 def main() -> None:
     try:
-        command: str = sys.argv[1] if len(sys.argv) > 1 else "console"
+        command: str = (sys.argv[1] if len(sys.argv) > 1 else "__not_provided__").lower()
 
         if get_pbm().get_version() != get_pbm().latest_version:
             logger.warning(f"this pbm repo is outdated. (current='{get_pbm().get_version()}' latest='{get_pbm().latest_version}')")
@@ -34,9 +50,16 @@ def main() -> None:
                 get_base().check(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
 
             case "create-base":
-                logger.warning("create-base is deprecated, but can still be used. for more information, see `pbm help base new_base`")
-
                 get_base().new_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
+
+            case "set-info":
+                get_base().set_desc(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base(), sys.argv[3] if len(sys.argv) > 3 else "")
+
+                logger.info("description updated successfully.")
+
+            case "info":
+                for i in get_base().get_desc(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base()).split("\n"):
+                    logger.info(i)
 
             case "delete-base":
                 get_base().delete_base(sys.argv[2] if len(sys.argv) > 2 else get_pbm().get_default_base())
@@ -130,7 +153,41 @@ def main() -> None:
                 launch_pbm_desktop()
 
             case "console":
-                get_pbm().console()
+                logger.error("console is deprecated and no longer works. this is because of security risks.")
+
+            case "report":
+                logger.info("a new tab should have opened in your browser.")
+
+                os.system("start https://github.com/elemenom/pbm/issues")
+
+            case "github":
+                logger.info("a new tab should have opened in your browser.")
+
+                os.system("start https://github.com/elemenom/pbm")
+
+            case "pypi":
+                logger.info("a new tab should have opened in your browser.")
+
+                os.system("start https://pypi.org/project/pbm-root")
+
+            case "uninstall":
+                logger.info("pbm uninstall guide:\n")
+
+                logger.info("1. your pbm repos will not be deleted, but may fall out of date.")
+                logger.info("2. you will not be able to use pbm commands to modify or init repos. this also applies to destroying them.")
+                logger.info("3. once you have made up your mind, run `pip uninstall pbm-root -y` to uninstall pbm.")
+
+            case "credits":
+                global CREDITS
+
+                for credit in CREDITS.format(
+                    v=get_pbm().latest_version,
+                    b=get_pbm().build_date
+                ).split("\n"):
+                    logger.info(credit)
+
+            case "__not_provided__":
+                logger.error(f"no command provided. usage: `pbm <command> [arg1] [arg2] [arg3] [...]`")
 
             case _:
                 logger.error(f"unknown command: '{command}'")
@@ -138,6 +195,7 @@ def main() -> None:
     except Exception as err:
         try:
             logger.error(f"pbm encountered an unexpected error: {type(err).__name__}")
+            logger.error("use `pbm report` to report this to pbm developers and get help.")
 
             if input("press enter to exit ") == "verbose":
                 raise err
