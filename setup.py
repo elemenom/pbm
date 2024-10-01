@@ -10,7 +10,7 @@ python setup.py sdist bdist_wheel
 python -m twine upload dist/*
 rm -r dist,build,*.egg-info
 git add --all
-git commit -m v1.9
+git commit -m v1.10
 git push
 """
 

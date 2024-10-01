@@ -129,8 +129,8 @@ setup(name="pbm repo",
 
 
 class PBM:
-    latest_version: str = "v1.9"
-    build_date: str = "30.9.2024"
+    latest_version: str = "v1.10"
+    build_date: str = "1.10.2024"
 
     def init(self) -> None:
         """
@@ -194,8 +194,7 @@ class PBM:
 
     def add_log(self, base: str | None, message: str | None = None, time: str | None = None) -> None:
         with open(f".pbm/bases/{base or self.get_default_base()}/logs", "a") as file:
-            file.write(
-                f"\n{time or datetime.now().strftime("%d-%m-%Y %H:%M:%S")}: build \"{message or f"unmarked commit " + str(randint(0, 9999))}\"")
+            file.write(f"{time or datetime.now().strftime("%d-%m-%Y %H:%M:%S")}: build \"{message or f"unmarked commit " + str(randint(0, 9999))}\"\n")
 
     def set_default_base_endpoint(self, name: str | None = None) -> None:
         """
@@ -270,6 +269,7 @@ class PBM:
 
             logger.info(f"pbm repo reinitialized successfully")
             logger.info(f"{old_version} -> {new_version}")
+
         else:
             logger.warning("cancelled pbm repo reinitialization")
 
@@ -277,7 +277,8 @@ class PBM:
         def __init__(self, pbm_instance: "PBM") -> None:
             self.pbm: PBM = pbm_instance
 
-        def ensure_base(self, base: str) -> None:
+        @staticmethod
+        def ensure_base(base: str) -> None:
             if not os.path.exists(f".pbm/bases/{base}"):
                 logger.error("cannot work in a base that does not exist.")
 
@@ -326,8 +327,12 @@ class PBM:
                 with open(".pbm/cx_freeze_setup.py", "w") as file:
                     file.write(CX_FREEZE_SETUP.format(fn))
 
+                shutil.copy(f".pbm/bases/{base}/logs", f"__logs_{base}__")
+
                 rmdir(f".pbm/bases/{base}")
                 mkdir(f".pbm/bases/{base}")
+                shutil.copy(f"__logs_{base}__", f".pbm/bases/{base}/logs")
+                os.remove(f"__logs_{base}__")
 
                 os.system(f"python .pbm/cx_freeze_setup.py build_exe --build-exe .pbm/bases/{base}")
 
@@ -342,10 +347,6 @@ class PBM:
 
             else:
                 logger.warning("cancelled standard build")
-
-        @staticmethod
-        def ignore_pbm_dir(_, cont: list[str]) -> list[str]:
-            return [d for d in cont if d == ".pbm"]
 
         def build_src(self, base: str | None = None, skip_conf: bool = False) -> None:
             base = base or self.pbm.get_default_base()
@@ -405,6 +406,7 @@ class PBM:
             else:
                 mkdir(f".pbm/bases/{base}")
                 self.set_desc(base, "no description provided.")
+                self.pbm.add_log(base, "base created [automatic]")
                 logger.info(f"base '{base}' created successfully")
 
         def export_all(self, location: str) -> None:
@@ -636,7 +638,7 @@ class PBM:
 
             base = base or self.pbm.get_default_base()
 
-            self.ensure_base()
+            self.ensure_base(base)
 
             logger.warning(f"this will overwrite all files in . with their respective files in the src of '{base}'.")
             logger.warning("are you sure you want to continue?")
